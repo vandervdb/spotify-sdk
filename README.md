@@ -4,8 +4,8 @@ Bibliothèque Spotify publiable, pensée pour des applications Android natives e
 Native. **Web API partout, App Remote sur Android uniquement**, et aucun secret client —
 le flot d'autorisation est Authorization Code + PKCE.
 
-> État : tranche 1 sur 5. `spotify-core` est écrit et testé ; les quatre autres artefacts
-> ne sont pas encore commencés. Voir *Feuille de route* plus bas.
+> État : tranches 1 et 2 sur 5. `spotify-core` et `spotify-android` sont écrits et testés —
+> 51 tests verts, sans réseau ni appareil. Voir *Feuille de route* plus bas.
 
 ---
 
@@ -26,7 +26,7 @@ combat pas la frontière, on la rend visible dans les artefacts.
 | Artefact | Contenu | Cibles |
 |---|---|---|
 | **`spotify-core`** | domaine, Web API, PKCE, contrat `TokenStore` | `jvm` · `iosArm64` · `iosX64` · `iosSimulatorArm64` |
-| `spotify-android` | App Remote, SDK auth, DataStore | AAR |
+| **`spotify-android`** | App Remote, SDK auth, DataStore | AAR |
 | `spotify-android-hilt` | un `@Module`, facultatif | AAR |
 | `spotify-testing` | `FakeSpotifyClient` | KMP |
 | `@vander/spotify-rn` | spec TurboModule + adaptateurs | npm |
@@ -98,9 +98,10 @@ les DTO n'en font partie.
 ## Build et tests
 
 ```bash
-./gradlew :spotify-core:jvmTest            # 30 tests
-./gradlew :spotify-core:iosX64Test         # les mêmes 30, sur simulateur
-./gradlew apiCheck                         # la surface publique n'a pas bougé
+./gradlew :spotify-core:jvmTest                  # 30 tests
+./gradlew :spotify-core:iosX64Test               # les mêmes 30, sur simulateur
+./gradlew :spotify-android:testDebugUnitTest     # 21 tests, sans émulateur
+./gradlew apiCheck                               # la surface publique n'a pas bougé
 ```
 
 Les tests n'ont besoin ni de réseau, ni de compte Spotify, ni d'identifiants : le seam de
@@ -130,7 +131,10 @@ Prouvé par un test qui tourne :
 - qu'aucun secret ne part vers `accounts.spotify.com` ;
 - qu'un `state` qui ne correspond pas empêche l'échange du code ;
 - que deux appels concurrents ne déclenchent qu'un seul renouvellement de jeton ;
-- qu'un `refresh_token` absent de la réponse ne remplace pas celui qu'on détient.
+- qu'un `refresh_token` absent de la réponse ne remplace pas celui qu'on détient ;
+- que se reconnecter à l'App Remote après une déconnexion rétablit bien l'abonnement ;
+- que la déconnexion annule l'abonnement **avant** de fermer la liaison ;
+- qu'une commande de lecture sans liaison ouverte échoue au lieu de ne rien faire.
 
 **Non vérifié**, et qui le restera tant qu'un appareil et des identifiants ne seront pas
 dans la boucle : tout appel réel à l'API Spotify, et tout comportement de l'App Remote.
@@ -144,15 +148,15 @@ Spotify.
 | | Tranche | État |
 |---|---|---|
 | 1 | `spotify-core` — domaine, Web API, PKCE, session | **fait, 30 tests verts** |
-| 2 | `spotify-android` — App Remote, SDK auth, DataStore | à faire |
+| 2 | `spotify-android` — App Remote, SDK auth, DataStore | **fait, 21 tests verts** |
 | 3 | `spotify-testing` + `spotify-android-hilt` | à faire |
 | 4 | `@vander/spotify-rn` — spec TS, adaptateurs Kotlin et Swift | à faire |
 | 5 | publication Maven, CI | à faire |
 
-À la tranche 2 : les AAR du SDK Spotify ne sont **pas** versionnés ici. Ils portent les
-conditions de Spotify et ne sont pas publiés sur Maven Central ; `spotify-android` les
-déclarera en `compileOnly` avec un `libs/` ignoré par git et une étape d'installation
-documentée.
+Les AAR du SDK Spotify ne sont **pas** versionnés ici : ils portent les conditions de
+Spotify et ne sont publiés sur aucun dépôt Maven. `spotify-android` les déclare en
+`compileOnly`, `libs/` est ignoré par git, et l'étape d'installation est documentée dans
+[`spotify-android/README.md`](spotify-android/README.md).
 
 ---
 

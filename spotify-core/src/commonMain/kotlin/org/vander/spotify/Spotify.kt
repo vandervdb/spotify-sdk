@@ -1,6 +1,5 @@
 package org.vander.spotify
 
-import io.ktor.client.engine.HttpClientEngine
 import org.vander.spotify.auth.Authorizer
 import org.vander.spotify.auth.TokenStore
 import org.vander.spotify.internal.DefaultSpotifyClient
@@ -21,16 +20,17 @@ public object Spotify {
      *   convient aux tests ; une application veut DataStore ou le Keychain.
      * @param authorizer comment ouvrir l'écran d'autorisation. Fourni par la couche
      *   plateforme — `:spotify-android` en propose une implémentation prête.
-     * @param engine moteur HTTP. Par défaut celui de la plateforme ; à surcharger pour
-     *   réutiliser un pool existant, ou injecter un `MockEngine` en test.
+     *
+     * Le moteur HTTP n'est pas un paramètre : l'exposer ferait entrer Ktor dans la surface
+     * publique, et lierait la version de Ktor des consommateurs à la nôtre. Un paramètre
+     * s'ajoute sans rupture le jour où le besoin est réel ; il ne se retire pas.
      */
     public fun create(
         config: SpotifyConfig,
         tokenStore: TokenStore,
         authorizer: Authorizer,
-        engine: HttpClientEngine = defaultHttpEngine(),
     ): SpotifyClient {
-        val http = spotifyHttpClient(engine)
+        val http = spotifyHttpClient(defaultHttpEngine())
         return DefaultSpotifyClient(
             config = config,
             tokenStore = tokenStore,

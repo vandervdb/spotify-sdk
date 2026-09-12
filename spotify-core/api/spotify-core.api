@@ -1,7 +1,6 @@
 public final class org/vander/spotify/Spotify {
 	public static final field INSTANCE Lorg/vander/spotify/Spotify;
-	public final fun create (Lorg/vander/spotify/SpotifyConfig;Lorg/vander/spotify/auth/TokenStore;Lorg/vander/spotify/auth/Authorizer;Lio/ktor/client/engine/HttpClientEngine;)Lorg/vander/spotify/SpotifyClient;
-	public static synthetic fun create$default (Lorg/vander/spotify/Spotify;Lorg/vander/spotify/SpotifyConfig;Lorg/vander/spotify/auth/TokenStore;Lorg/vander/spotify/auth/Authorizer;Lio/ktor/client/engine/HttpClientEngine;ILjava/lang/Object;)Lorg/vander/spotify/SpotifyClient;
+	public final fun create (Lorg/vander/spotify/SpotifyConfig;Lorg/vander/spotify/auth/TokenStore;Lorg/vander/spotify/auth/Authorizer;)Lorg/vander/spotify/SpotifyClient;
 }
 
 public abstract interface class org/vander/spotify/SpotifyClient {
@@ -91,14 +90,22 @@ public final class org/vander/spotify/SpotifyScope$Companion {
 }
 
 public final class org/vander/spotify/auth/AuthorizationRequest {
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Set;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/vander/spotify/auth/AuthorizationRequest;
-	public static synthetic fun copy$default (Lorg/vander/spotify/auth/AuthorizationRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lorg/vander/spotify/auth/AuthorizationRequest;
+	public final fun component4 ()Ljava/util/Set;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Set;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/vander/spotify/auth/AuthorizationRequest;
+	public static synthetic fun copy$default (Lorg/vander/spotify/auth/AuthorizationRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Set;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lorg/vander/spotify/auth/AuthorizationRequest;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getClientId ()Ljava/lang/String;
+	public final fun getCodeChallenge ()Ljava/lang/String;
+	public final fun getCodeChallengeMethod ()Ljava/lang/String;
 	public final fun getRedirectUri ()Ljava/lang/String;
+	public final fun getScopes ()Ljava/util/Set;
 	public final fun getState ()Ljava/lang/String;
 	public final fun getUrl ()Ljava/lang/String;
 	public fun hashCode ()I

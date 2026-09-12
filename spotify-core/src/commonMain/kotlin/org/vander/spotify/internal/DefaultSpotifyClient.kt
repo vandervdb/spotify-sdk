@@ -72,10 +72,17 @@ internal class DefaultSpotifyClient(
                 ?.let { buildAuthorizeUrl(config, challenge, state, it) }
                 ?: buildAuthorizeUrl(config, challenge, state)
 
-        val response =
-            authorizer
-                .authorize(AuthorizationRequest(url, config.redirectUri, state))
-                .getOrElse { return fail(it.asSpotifyError()) }
+        val request =
+            AuthorizationRequest(
+                url = url,
+                clientId = config.clientId,
+                redirectUri = config.redirectUri,
+                scopes = config.scopes,
+                codeChallenge = challenge.challenge,
+                codeChallengeMethod = challenge.method,
+                state = state,
+            )
+        val response = authorizer.authorize(request).getOrElse { return fail(it.asSpotifyError()) }
 
         // RFC 6749 §10.12 : un `state` qui ne correspond pas signale une réponse injectée.
         // Le code n'est pas échangé.

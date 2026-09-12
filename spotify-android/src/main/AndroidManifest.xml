@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Rien à déclarer ici : `LoginActivity` vient du manifeste de l'AAR spotify-auth, qui
+    l'expose avec un intent-filter VIEW/BROWSABLE paramétré par les placeholders
+    `redirectSchemeName` et `redirectHostName`.
+
+    Ces placeholders sont donc la responsabilité de l'APPLICATION hôte, et ils doivent
+    correspondre à la `redirectUri` passée dans SpotifyConfig. C'est une contrainte du SDK
+    Spotify, pas un choix de cette lib — voir README.md, section « Installation ».
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+</manifest>
