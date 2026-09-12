@@ -18,3 +18,6 @@ rootProject.name = "spotify-sdk"
 
 include(":spotify-core")
 include(":spotify-android")
+include(":spotify-testing")
+include(":spotify-android-testing")
+include(":spotify-android-hilt")

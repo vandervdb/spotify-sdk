@@ -1,0 +1,119 @@
+public final class org/vander/spotify/android/testing/FakeAndroidSpotifyClient : org/vander/spotify/SpotifyClient, org/vander/spotify/android/AndroidSpotifyClient {
+	public fun <init> ()V
+	public fun <init> (Lorg/vander/spotify/testing/FakeSpotifyClient;Lorg/vander/spotify/android/testing/FakeSpotifyPlayer;)V
+	public synthetic fun <init> (Lorg/vander/spotify/testing/FakeSpotifyClient;Lorg/vander/spotify/android/testing/FakeSpotifyPlayer;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun close ()V
+	public fun currentUser-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getFakeClient ()Lorg/vander/spotify/testing/FakeSpotifyClient;
+	public final fun getFakePlayer ()Lorg/vander/spotify/android/testing/FakeSpotifyPlayer;
+	public fun getPlayer ()Lorg/vander/spotify/android/SpotifyPlayer;
+	public fun getPlaylists ()Lkotlinx/coroutines/flow/StateFlow;
+	public fun getQueue ()Lkotlinx/coroutines/flow/StateFlow;
+	public fun getSession ()Lkotlinx/coroutines/flow/StateFlow;
+	public fun isSaved-qqXD0pA (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun refreshPlaylists-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun refreshQueue-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun setSaved-MudQkqc (Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signIn-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class org/vander/spotify/android/testing/FakeSpotifyPlayer : org/vander/spotify/android/SpotifyPlayer {
+	public fun <init> ()V
+	public fun <init> (Lorg/vander/spotify/android/NowPlaying;)V
+	public synthetic fun <init> (Lorg/vander/spotify/android/NowPlaying;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun clearCommands ()V
+	public fun connect-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun disconnect ()V
+	public final fun emitNowPlaying (Lorg/vander/spotify/android/NowPlaying;)V
+	public final fun getCommands ()Ljava/util/List;
+	public final fun getConnectCalls ()I
+	public fun getConnection ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getNextConnectFailure ()Lorg/vander/spotify/SpotifyError;
+	public fun getNowPlaying ()Lkotlinx/coroutines/flow/StateFlow;
+	public fun pause-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun play-qqXD0pA (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun resume-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun seekTo-gIAlu-s (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun setNextConnectFailure (Lorg/vander/spotify/SpotifyError;)V
+	public fun setRepeat-gIAlu-s (Lorg/vander/spotify/android/RepeatMode;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun setShuffle-gIAlu-s (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun skipNext-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun skipPrevious-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class org/vander/spotify/android/testing/PlayerCommand {
+}
+
+public final class org/vander/spotify/android/testing/PlayerCommand$Pause : org/vander/spotify/android/testing/PlayerCommand {
+	public static final field INSTANCE Lorg/vander/spotify/android/testing/PlayerCommand$Pause;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/android/testing/PlayerCommand$Play : org/vander/spotify/android/testing/PlayerCommand {
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-7k_9dm4 ()Ljava/lang/String;
+	public final fun copy-ycqU7OQ (Ljava/lang/String;)Lorg/vander/spotify/android/testing/PlayerCommand$Play;
+	public static synthetic fun copy-ycqU7OQ$default (Lorg/vander/spotify/android/testing/PlayerCommand$Play;Ljava/lang/String;ILjava/lang/Object;)Lorg/vander/spotify/android/testing/PlayerCommand$Play;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getTrack-7k_9dm4 ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/android/testing/PlayerCommand$Resume : org/vander/spotify/android/testing/PlayerCommand {
+	public static final field INSTANCE Lorg/vander/spotify/android/testing/PlayerCommand$Resume;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/android/testing/PlayerCommand$SeekTo : org/vander/spotify/android/testing/PlayerCommand {
+	public fun <init> (J)V
+	public final fun component1 ()J
+	public final fun copy (J)Lorg/vander/spotify/android/testing/PlayerCommand$SeekTo;
+	public static synthetic fun copy$default (Lorg/vander/spotify/android/testing/PlayerCommand$SeekTo;JILjava/lang/Object;)Lorg/vander/spotify/android/testing/PlayerCommand$SeekTo;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPositionMs ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/android/testing/PlayerCommand$SetRepeat : org/vander/spotify/android/testing/PlayerCommand {
+	public fun <init> (Lorg/vander/spotify/android/RepeatMode;)V
+	public final fun component1 ()Lorg/vander/spotify/android/RepeatMode;
+	public final fun copy (Lorg/vander/spotify/android/RepeatMode;)Lorg/vander/spotify/android/testing/PlayerCommand$SetRepeat;
+	public static synthetic fun copy$default (Lorg/vander/spotify/android/testing/PlayerCommand$SetRepeat;Lorg/vander/spotify/android/RepeatMode;ILjava/lang/Object;)Lorg/vander/spotify/android/testing/PlayerCommand$SetRepeat;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMode ()Lorg/vander/spotify/android/RepeatMode;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/android/testing/PlayerCommand$SetShuffle : org/vander/spotify/android/testing/PlayerCommand {
+	public fun <init> (Z)V
+	public final fun component1 ()Z
+	public final fun copy (Z)Lorg/vander/spotify/android/testing/PlayerCommand$SetShuffle;
+	public static synthetic fun copy$default (Lorg/vander/spotify/android/testing/PlayerCommand$SetShuffle;ZILjava/lang/Object;)Lorg/vander/spotify/android/testing/PlayerCommand$SetShuffle;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEnabled ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/android/testing/PlayerCommand$SkipNext : org/vander/spotify/android/testing/PlayerCommand {
+	public static final field INSTANCE Lorg/vander/spotify/android/testing/PlayerCommand$SkipNext;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/android/testing/PlayerCommand$SkipPrevious : org/vander/spotify/android/testing/PlayerCommand {
+	public static final field INSTANCE Lorg/vander/spotify/android/testing/PlayerCommand$SkipPrevious;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+

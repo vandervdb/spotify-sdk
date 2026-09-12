@@ -4,8 +4,9 @@ Bibliothèque Spotify publiable, pensée pour des applications Android natives e
 Native. **Web API partout, App Remote sur Android uniquement**, et aucun secret client —
 le flot d'autorisation est Authorization Code + PKCE.
 
-> État : tranches 1 et 2 sur 5. `spotify-core` et `spotify-android` sont écrits et testés —
-> 51 tests verts, sans réseau ni appareil. Voir *Feuille de route* plus bas.
+> État : tranches 1 à 3 sur 5. Le cœur, la couche Android et les doubles de test sont
+> écrits et testés — **67 tests, 107 exécutions, 0 échec**, sans réseau ni appareil.
+> Voir *Feuille de route* plus bas.
 
 ---
 
@@ -27,9 +28,15 @@ combat pas la frontière, on la rend visible dans les artefacts.
 |---|---|---|
 | **`spotify-core`** | domaine, Web API, PKCE, contrat `TokenStore` | `jvm` · `iosArm64` · `iosX64` · `iosSimulatorArm64` |
 | **`spotify-android`** | App Remote, SDK auth, DataStore | AAR |
-| `spotify-android-hilt` | un `@Module`, facultatif | AAR |
-| `spotify-testing` | `FakeSpotifyClient` | KMP |
+| **`spotify-android-hilt`** | un `@Module`, facultatif | AAR |
+| **`spotify-testing`** | `FakeSpotifyClient` | KMP |
+| **`spotify-android-testing`** | `FakeSpotifyPlayer`, `FakeAndroidSpotifyClient` | AAR |
 | `@vander/spotify-rn` | spec TurboModule + adaptateurs | npm |
+
+Six artefacts et non cinq comme prévu initialement : `SpotifyPlayer` n'existant que côté
+Android, son double ne peut pas vivre dans un module multiplateforme qui cible aussi iOS.
+Le découpage des doubles suit exactement celui de la lib — un consommateur iOS ne tire
+jamais de code Android.
 
 `spotify-core` ne déclare **pas** de cible Android : il ne contient aucun code Android, un
 consommateur Android prend l'artefact JVM. Ça retire AGP et le SDK Android du chemin
@@ -98,11 +105,17 @@ les DTO n'en font partie.
 ## Build et tests
 
 ```bash
-./gradlew :spotify-core:jvmTest                  # 30 tests
-./gradlew :spotify-core:iosX64Test               # les mêmes 30, sur simulateur
-./gradlew :spotify-android:testDebugUnitTest     # 21 tests, sans émulateur
-./gradlew apiCheck                               # la surface publique n'a pas bougé
+./gradlew :spotify-core:jvmTest                     # 30 tests
+./gradlew :spotify-core:iosX64Test                  # les mêmes 30, sur simulateur
+./gradlew :spotify-android:testDebugUnitTest        # 21 tests, sans émulateur
+./gradlew :spotify-testing:jvmTest                  # 10 tests, sur le double lui-même
+./gradlew :spotify-android-testing:testDebugUnitTest # 6 tests
+./gradlew apiCheck                                  # la surface publique n'a pas bougé
 ```
+
+Les doubles de test sont couverts par leurs propres tests. Un double publié est du code
+livré : un double dont les corps sont vides passe les tests qu'il est censé servir, et
+l'erreur se découvre chez le consommateur.
 
 Les tests n'ont besoin ni de réseau, ni de compte Spotify, ni d'identifiants : le seam de
 test est le moteur Ktor, remplacé par un `MockEngine`. Deux adapters, donc un vrai seam.
@@ -149,7 +162,7 @@ Spotify.
 |---|---|---|
 | 1 | `spotify-core` — domaine, Web API, PKCE, session | **fait, 30 tests verts** |
 | 2 | `spotify-android` — App Remote, SDK auth, DataStore | **fait, 21 tests verts** |
-| 3 | `spotify-testing` + `spotify-android-hilt` | à faire |
+| 3 | `spotify-testing`, `spotify-android-testing`, `spotify-android-hilt` | **fait, 16 tests verts** |
 | 4 | `@vander/spotify-rn` — spec TS, adaptateurs Kotlin et Swift | à faire |
 | 5 | publication Maven, CI | à faire |
 

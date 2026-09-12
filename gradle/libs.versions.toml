@@ -12,6 +12,10 @@ agp = "8.13.2"
 androidCompileSdk = "36"   # imposé par androidx.activity 1.13 et core-ktx 1.19
 androidMinSdk = "26"
 datastore = "1.2.1"
+# Épinglé : à partir de 2.60, le plugin Gradle Hilt refuse AGP 8 ("only compatible with AGP
+# 9.0.0 or higher"). Dépingler Hilt et adopter AGP 9 sont donc la même décision — et une lib
+# n'impose pas AGP 9 à ses consommateurs pour un artefact facultatif.
+hilt = "2.58"
 androidxActivity = "1.13.0"
 
 [libraries]
@@ -29,12 +33,21 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
+# kapt lit les métadonnées Kotlin ; le lecteur embarqué par Dagger/Hilt est en retard sur la
+# version du compilateur (google/dagger#5177) et refuse les métadonnées 2.4.0. On l'écrase en
+# mettant une version à jour en tête du classpath d'annotation.
+kotlin-metadata-jvm = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm", version.ref = "kotlin" }
+
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidxActivity" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

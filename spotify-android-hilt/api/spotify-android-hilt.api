@@ -1,0 +1,32 @@
+public class hilt_aggregated_deps/_org_vander_spotify_android_hilt_SpotifyModule {
+	public fun <init> ()V
+}
+
+public final class org/vander/spotify/android/hilt/SpotifyModule {
+	public static final field INSTANCE Lorg/vander/spotify/android/hilt/SpotifyModule;
+	public final fun provideAndroidSpotifyClient (Landroid/content/Context;Lorg/vander/spotify/SpotifyConfig;Lorg/vander/spotify/auth/Authorizer;)Lorg/vander/spotify/android/AndroidSpotifyClient;
+	public final fun provideSpotifyClient (Lorg/vander/spotify/android/AndroidSpotifyClient;)Lorg/vander/spotify/SpotifyClient;
+	public final fun provideSpotifyPlayer (Lorg/vander/spotify/android/AndroidSpotifyClient;)Lorg/vander/spotify/android/SpotifyPlayer;
+}
+
+public final class org/vander/spotify/android/hilt/SpotifyModule_ProvideAndroidSpotifyClientFactory : dagger/internal/Factory {
+	public static fun create (Ldagger/internal/Provider;Ldagger/internal/Provider;Ldagger/internal/Provider;)Lorg/vander/spotify/android/hilt/SpotifyModule_ProvideAndroidSpotifyClientFactory;
+	public synthetic fun get ()Ljava/lang/Object;
+	public fun get ()Lorg/vander/spotify/android/AndroidSpotifyClient;
+	public static fun provideAndroidSpotifyClient (Landroid/content/Context;Lorg/vander/spotify/SpotifyConfig;Lorg/vander/spotify/auth/Authorizer;)Lorg/vander/spotify/android/AndroidSpotifyClient;
+}
+
+public final class org/vander/spotify/android/hilt/SpotifyModule_ProvideSpotifyClientFactory : dagger/internal/Factory {
+	public static fun create (Ldagger/internal/Provider;)Lorg/vander/spotify/android/hilt/SpotifyModule_ProvideSpotifyClientFactory;
+	public synthetic fun get ()Ljava/lang/Object;
+	public fun get ()Lorg/vander/spotify/SpotifyClient;
+	public static fun provideSpotifyClient (Lorg/vander/spotify/android/AndroidSpotifyClient;)Lorg/vander/spotify/SpotifyClient;
+}
+
+public final class org/vander/spotify/android/hilt/SpotifyModule_ProvideSpotifyPlayerFactory : dagger/internal/Factory {
+	public static fun create (Ldagger/internal/Provider;)Lorg/vander/spotify/android/hilt/SpotifyModule_ProvideSpotifyPlayerFactory;
+	public synthetic fun get ()Ljava/lang/Object;
+	public fun get ()Lorg/vander/spotify/android/SpotifyPlayer;
+	public static fun provideSpotifyPlayer (Lorg/vander/spotify/android/AndroidSpotifyClient;)Lorg/vander/spotify/android/SpotifyPlayer;
+}
+
