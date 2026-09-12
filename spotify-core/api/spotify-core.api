@@ -1,0 +1,389 @@
+public final class org/vander/spotify/Spotify {
+	public static final field INSTANCE Lorg/vander/spotify/Spotify;
+	public final fun create (Lorg/vander/spotify/SpotifyConfig;Lorg/vander/spotify/auth/TokenStore;Lorg/vander/spotify/auth/Authorizer;Lio/ktor/client/engine/HttpClientEngine;)Lorg/vander/spotify/SpotifyClient;
+	public static synthetic fun create$default (Lorg/vander/spotify/Spotify;Lorg/vander/spotify/SpotifyConfig;Lorg/vander/spotify/auth/TokenStore;Lorg/vander/spotify/auth/Authorizer;Lio/ktor/client/engine/HttpClientEngine;ILjava/lang/Object;)Lorg/vander/spotify/SpotifyClient;
+}
+
+public abstract interface class org/vander/spotify/SpotifyClient {
+	public abstract fun close ()V
+	public abstract fun currentUser-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getPlaylists ()Lkotlinx/coroutines/flow/StateFlow;
+	public abstract fun getQueue ()Lkotlinx/coroutines/flow/StateFlow;
+	public abstract fun getSession ()Lkotlinx/coroutines/flow/StateFlow;
+	public abstract fun isSaved-qqXD0pA (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun refreshPlaylists-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun refreshQueue-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setSaved-MudQkqc (Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun signIn-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class org/vander/spotify/SpotifyConfig {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/Set;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/Set;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/Set;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/util/Set;)Lorg/vander/spotify/SpotifyConfig;
+	public static synthetic fun copy$default (Lorg/vander/spotify/SpotifyConfig;Ljava/lang/String;Ljava/lang/String;Ljava/util/Set;ILjava/lang/Object;)Lorg/vander/spotify/SpotifyConfig;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getClientId ()Ljava/lang/String;
+	public final fun getRedirectUri ()Ljava/lang/String;
+	public final fun getScopes ()Ljava/util/Set;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class org/vander/spotify/SpotifyError : java/lang/Exception {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class org/vander/spotify/SpotifyError$Api : org/vander/spotify/SpotifyError {
+	public fun <init> (ILjava/lang/String;)V
+	public final fun getReason ()Ljava/lang/String;
+	public final fun getStatus ()I
+}
+
+public final class org/vander/spotify/SpotifyError$AuthorizationCancelled : org/vander/spotify/SpotifyError {
+	public fun <init> ()V
+}
+
+public final class org/vander/spotify/SpotifyError$Network : org/vander/spotify/SpotifyError {
+	public fun <init> (Ljava/lang/Throwable;)V
+}
+
+public final class org/vander/spotify/SpotifyError$NotSignedIn : org/vander/spotify/SpotifyError {
+	public fun <init> ()V
+}
+
+public final class org/vander/spotify/SpotifyError$Serialization : org/vander/spotify/SpotifyError {
+	public fun <init> (Ljava/lang/Throwable;)V
+}
+
+public final class org/vander/spotify/SpotifyError$StateMismatch : org/vander/spotify/SpotifyError {
+	public fun <init> ()V
+}
+
+public final class org/vander/spotify/SpotifyError$Unauthorized : org/vander/spotify/SpotifyError {
+	public fun <init> (Ljava/lang/String;)V
+}
+
+public final class org/vander/spotify/SpotifyScope : java/lang/Enum {
+	public static final field Companion Lorg/vander/spotify/SpotifyScope$Companion;
+	public static final field PlaylistReadPrivate Lorg/vander/spotify/SpotifyScope;
+	public static final field Streaming Lorg/vander/spotify/SpotifyScope;
+	public static final field UserLibraryModify Lorg/vander/spotify/SpotifyScope;
+	public static final field UserLibraryRead Lorg/vander/spotify/SpotifyScope;
+	public static final field UserModifyPlaybackState Lorg/vander/spotify/SpotifyScope;
+	public static final field UserReadCurrentlyPlaying Lorg/vander/spotify/SpotifyScope;
+	public static final field UserReadEmail Lorg/vander/spotify/SpotifyScope;
+	public static final field UserReadPlaybackState Lorg/vander/spotify/SpotifyScope;
+	public static final field UserReadPrivate Lorg/vander/spotify/SpotifyScope;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getWireName ()Ljava/lang/String;
+	public static fun valueOf (Ljava/lang/String;)Lorg/vander/spotify/SpotifyScope;
+	public static fun values ()[Lorg/vander/spotify/SpotifyScope;
+}
+
+public final class org/vander/spotify/SpotifyScope$Companion {
+	public final fun getDEFAULT ()Ljava/util/Set;
+}
+
+public final class org/vander/spotify/auth/AuthorizationRequest {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/vander/spotify/auth/AuthorizationRequest;
+	public static synthetic fun copy$default (Lorg/vander/spotify/auth/AuthorizationRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lorg/vander/spotify/auth/AuthorizationRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getRedirectUri ()Ljava/lang/String;
+	public final fun getState ()Ljava/lang/String;
+	public final fun getUrl ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/auth/AuthorizationResponse {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lorg/vander/spotify/auth/AuthorizationResponse;
+	public static synthetic fun copy$default (Lorg/vander/spotify/auth/AuthorizationResponse;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lorg/vander/spotify/auth/AuthorizationResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCode ()Ljava/lang/String;
+	public final fun getState ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class org/vander/spotify/auth/Authorizer {
+	public abstract fun authorize-gIAlu-s (Lorg/vander/spotify/auth/AuthorizationRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class org/vander/spotify/auth/InMemoryTokenStore : org/vander/spotify/auth/TokenStore {
+	public fun <init> ()V
+	public fun clear (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun load (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun save (Lorg/vander/spotify/auth/StoredToken;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class org/vander/spotify/auth/PkceChallenge {
+	public static final field Companion Lorg/vander/spotify/auth/PkceChallenge$Companion;
+	public static final field METHOD Ljava/lang/String;
+	public final fun getChallenge ()Ljava/lang/String;
+	public final fun getMethod ()Ljava/lang/String;
+	public final fun getVerifier ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/auth/PkceChallenge$Companion {
+}
+
+public abstract interface class org/vander/spotify/auth/SessionState {
+}
+
+public final class org/vander/spotify/auth/SessionState$Authorized : org/vander/spotify/auth/SessionState {
+	public static final field INSTANCE Lorg/vander/spotify/auth/SessionState$Authorized;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/auth/SessionState$Authorizing : org/vander/spotify/auth/SessionState {
+	public static final field INSTANCE Lorg/vander/spotify/auth/SessionState$Authorizing;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/auth/SessionState$Failed : org/vander/spotify/auth/SessionState {
+	public fun <init> (Lorg/vander/spotify/SpotifyError;)V
+	public final fun component1 ()Lorg/vander/spotify/SpotifyError;
+	public final fun copy (Lorg/vander/spotify/SpotifyError;)Lorg/vander/spotify/auth/SessionState$Failed;
+	public static synthetic fun copy$default (Lorg/vander/spotify/auth/SessionState$Failed;Lorg/vander/spotify/SpotifyError;ILjava/lang/Object;)Lorg/vander/spotify/auth/SessionState$Failed;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getError ()Lorg/vander/spotify/SpotifyError;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/auth/SessionState$SignedOut : org/vander/spotify/auth/SessionState {
+	public static final field INSTANCE Lorg/vander/spotify/auth/SessionState$SignedOut;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/auth/StoredToken {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;J)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()J
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;J)Lorg/vander/spotify/auth/StoredToken;
+	public static synthetic fun copy$default (Lorg/vander/spotify/auth/StoredToken;Ljava/lang/String;Ljava/lang/String;JILjava/lang/Object;)Lorg/vander/spotify/auth/StoredToken;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAccessToken ()Ljava/lang/String;
+	public final fun getExpiresAtEpochMs ()J
+	public final fun getRefreshToken ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class org/vander/spotify/auth/TokenStore {
+	public abstract fun clear (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun load (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun save (Lorg/vander/spotify/auth/StoredToken;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class org/vander/spotify/model/Album {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lorg/vander/spotify/model/Album;
+	public static synthetic fun copy$default (Lorg/vander/spotify/model/Album;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lorg/vander/spotify/model/Album;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCover ()Lorg/vander/spotify/model/Image;
+	public final fun getId ()Ljava/lang/String;
+	public final fun getImages ()Ljava/util/List;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/model/Artist {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lorg/vander/spotify/model/Artist;
+	public static synthetic fun copy$default (Lorg/vander/spotify/model/Artist;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lorg/vander/spotify/model/Artist;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getId ()Ljava/lang/String;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/model/Image {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/Integer;
+	public final fun component3 ()Ljava/lang/Integer;
+	public final fun copy (Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;)Lorg/vander/spotify/model/Image;
+	public static synthetic fun copy$default (Lorg/vander/spotify/model/Image;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;ILjava/lang/Object;)Lorg/vander/spotify/model/Image;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getHeight ()Ljava/lang/Integer;
+	public final fun getUrl ()Ljava/lang/String;
+	public final fun getWidth ()Ljava/lang/Integer;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/model/Playlist {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILjava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILjava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-7iVCoKc ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()I
+	public final fun component4 ()Ljava/util/List;
+	public final fun copy-AqClSPg (Ljava/lang/String;Ljava/lang/String;ILjava/util/List;)Lorg/vander/spotify/model/Playlist;
+	public static synthetic fun copy-AqClSPg$default (Lorg/vander/spotify/model/Playlist;Ljava/lang/String;Ljava/lang/String;ILjava/util/List;ILjava/lang/Object;)Lorg/vander/spotify/model/Playlist;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCover ()Lorg/vander/spotify/model/Image;
+	public final fun getId-7iVCoKc ()Ljava/lang/String;
+	public final fun getImages ()Ljava/util/List;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getTrackCount ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/model/PlaylistCollection {
+	public static final field Companion Lorg/vander/spotify/model/PlaylistCollection$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/util/List;I)V
+	public synthetic fun <init> (Ljava/util/List;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()I
+	public final fun copy (Ljava/util/List;I)Lorg/vander/spotify/model/PlaylistCollection;
+	public static synthetic fun copy$default (Lorg/vander/spotify/model/PlaylistCollection;Ljava/util/List;IILjava/lang/Object;)Lorg/vander/spotify/model/PlaylistCollection;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getItems ()Ljava/util/List;
+	public final fun getTotal ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/model/PlaylistCollection$Companion {
+	public final fun getEMPTY ()Lorg/vander/spotify/model/PlaylistCollection;
+}
+
+public final class org/vander/spotify/model/PlaylistId {
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lorg/vander/spotify/model/PlaylistId;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/model/Queue {
+	public static final field Companion Lorg/vander/spotify/model/Queue$Companion;
+	public fun <init> ()V
+	public fun <init> (Lorg/vander/spotify/model/Track;Ljava/util/List;)V
+	public synthetic fun <init> (Lorg/vander/spotify/model/Track;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lorg/vander/spotify/model/Track;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (Lorg/vander/spotify/model/Track;Ljava/util/List;)Lorg/vander/spotify/model/Queue;
+	public static synthetic fun copy$default (Lorg/vander/spotify/model/Queue;Lorg/vander/spotify/model/Track;Ljava/util/List;ILjava/lang/Object;)Lorg/vander/spotify/model/Queue;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCurrentlyPlaying ()Lorg/vander/spotify/model/Track;
+	public final fun getUpcoming ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/model/Queue$Companion {
+	public final fun getEMPTY ()Lorg/vander/spotify/model/Queue;
+}
+
+public final class org/vander/spotify/model/Track {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lorg/vander/spotify/model/Album;JLjava/lang/Integer;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lorg/vander/spotify/model/Album;JLjava/lang/Integer;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-7k_9dm4 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Lorg/vander/spotify/model/Album;
+	public final fun component5 ()J
+	public final fun component6 ()Ljava/lang/Integer;
+	public final fun copy-Ju5LolY (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lorg/vander/spotify/model/Album;JLjava/lang/Integer;)Lorg/vander/spotify/model/Track;
+	public static synthetic fun copy-Ju5LolY$default (Lorg/vander/spotify/model/Track;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lorg/vander/spotify/model/Album;JLjava/lang/Integer;ILjava/lang/Object;)Lorg/vander/spotify/model/Track;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAlbum ()Lorg/vander/spotify/model/Album;
+	public final fun getArtistNames ()Ljava/lang/String;
+	public final fun getArtists ()Ljava/util/List;
+	public final fun getDurationMs ()J
+	public final fun getId-7k_9dm4 ()Ljava/lang/String;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getTrackNumber ()Ljava/lang/Integer;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/model/TrackId {
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lorg/vander/spotify/model/TrackId;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public static final fun getUri-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/model/User {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-bawVgzw ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/util/List;
+	public final fun copy-riRuGaQ (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lorg/vander/spotify/model/User;
+	public static synthetic fun copy-riRuGaQ$default (Lorg/vander/spotify/model/User;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lorg/vander/spotify/model/User;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAvatar ()Lorg/vander/spotify/model/Image;
+	public final fun getDisplayName ()Ljava/lang/String;
+	public final fun getEmail ()Ljava/lang/String;
+	public final fun getId-bawVgzw ()Ljava/lang/String;
+	public final fun getImages ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/model/UserId {
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lorg/vander/spotify/model/UserId;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+

@@ -1,0 +1,10 @@
+.gradle/
+build/
+local.properties
+.DS_Store
+.idea/
+.kotlin/
+
+# Les AAR du SDK Spotify ne sont pas redistribuables : ils portent les conditions de
+# Spotify et ne sont pas publiés sur Maven Central. Voir spotify-android/README.md.
+spotify-android/libs/*.aar
