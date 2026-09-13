@@ -26,9 +26,12 @@ Trois choses à savoir avant d'aller plus loin :
   l'App Remote n'a été observé : cela demande un `client_id` enregistré et un appareil avec
   l'application Spotify connectée. Voir *Ce qui est prouvé, et ce qui ne l'est pas*.
 
-**Avancement** : tranches 1 à 3 sur 5. Le cœur, la couche Android, les doubles de test et
+**Avancement** : tranches 1 à 5, la 4 partiellement. Le cœur, la couche Android, les doubles de test et
 les deux câblages DI sont écrits et testés — **71 tests, 111 exécutions, 0 échec**, sans
-réseau ni appareil. Restent le pont React Native et la publication. Voir *Feuille de route*.
+réseau ni appareil. La chaîne de publication est configurée et vérifiée en local. Le pont
+React Native est écrit : le spec passe le codegen et l'adaptateur Kotlin compile, mais
+l'adaptateur Swift n'est pas compilé et rien n'a tourné dans une vraie application.
+Voir *Feuille de route*.
 
 ---
 
@@ -196,7 +199,7 @@ Spotify.
 | 1 | `spotify-core` — domaine, Web API, PKCE, session | **fait, 30 tests verts** |
 | 2 | `spotify-android` — App Remote, SDK auth, DataStore | **fait, 21 tests verts** |
 | 3 | `spotify-testing`, `spotify-android-testing`, `spotify-android-hilt`, `spotify-android-koin` | **fait, 20 tests verts** |
-| 4 | `@vander/spotify-rn` — spec TS, adaptateurs Kotlin et Swift | à faire |
+| 4 | `@vander/spotify-rn` — spec TS, adaptateurs Kotlin et Swift | **partiel** — voir ci-dessous |
 | 5 | publication Maven, CI | **fait** — chaîne configurée, vérifiée en local, non publiée |
 
 Les AAR du SDK Spotify ne sont **pas** versionnés ici : ils portent les conditions de
@@ -257,6 +260,27 @@ Secrets attendus : `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_
 Central en exige un non trivial pour une version définitive — ce n'est pas requis pour un
 SNAPSHOT. Le Dokka embarqué dans AGP ne sait pas lire les métadonnées Kotlin 2.4, d'où
 l'absence de javadoc côté Android.
+
+---
+
+## Pont React Native — ce qui est vérifié
+
+Le paquet [`spotify-rn`](spotify-rn) est la partie la moins vérifiée du dépôt, et son README
+le détaille ligne par ligne. En résumé :
+
+| | |
+|---|---|
+| Spec TypeScript accepté par le codegen | ✅ 19 méthodes, 4 événements |
+| `tsc --noEmit` | ✅ |
+| Adaptateur Kotlin compilé contre le spec généré et `react-android` | ✅ |
+| `SpotifyCore.xcframework` construit | ✅ device + simulateur |
+| Adaptateur Swift compilé | ❌ aucun projet Xcode ici |
+| Fonctionnement dans une application | ❌ sur aucune plateforme |
+
+L'asymétrie à connaître : `isPlayerAvailable()` rend `false` sur iOS. Le contrôle de lecture
+local passe par l'App Remote, dont le SDK n'existe que sur Android. Côté Kotlin cette
+distinction est portée par le classpath ; le spec TurboModule étant partagé, il faut ici un
+drapeau à l'exécution.
 
 ---
 

@@ -1,0 +1,36 @@
+{
+  "name": "@vander/spotify-rn",
+  "version": "0.1.0",
+  "description": "Pont React Native vers la bibliothèque Spotify Kotlin Multiplatform — Web API partout, App Remote sur Android.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "source": "src/index.ts",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vandervdb/Spotify-sdk.git",
+    "directory": "spotify-rn"
+  },
+  "files": ["src", "lib", "android", "ios", "*.podspec", "README.md"],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "codegen": "node node_modules/@react-native/codegen/lib/cli/combine/combine-js-to-schema-cli.js build/schema.json src && node node_modules/@react-native/codegen/lib/cli/generators/generate-specs-cli.js --platform android --schemaPath build/schema.json --outputDir build/generated --libraryName SpotifyRn --javaPackageName org.vander.spotify.rn"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": ">=0.76.0"
+  },
+  "devDependencies": {
+    "@react-native/codegen": "0.87.1",
+    "react-native": "0.87.1",
+    "typescript": "5.9.3"
+  },
+  "codegenConfig": {
+    "name": "SpotifyRn",
+    "type": "modules",
+    "jsSrcsDir": "src",
+    "android": {
+      "javaPackageName": "org.vander.spotify.rn"
+    }
+  }
+}

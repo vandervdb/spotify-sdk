@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
@@ -30,6 +32,20 @@ kotlin {
         // un simulateur de `xcrun simctl list devices available`.
         testRuns["test"].deviceId = providers.gradleProperty("spotify.simulator")
             .getOrElse("iPhone 15 Pro")
+    }
+
+    // Un XCFramework réunit les trois architectures iOS en un artefact unique, celui que
+    // consomme un projet Xcode ou un podspec. `./gradlew :spotify-core:assembleSpotifyCoreXCFramework`
+    // le produit dans build/XCFrameworks.
+    val xcf = XCFramework("SpotifyCore")
+    listOf(iosArm64(), iosX64(), iosSimulatorArm64()).forEach { target ->
+        target.binaries.framework {
+            baseName = "SpotifyCore"
+            // Statique : une lib distribuée par CocoaPods évite d'imposer à l'application
+            // l'embarquement et la signature d'un framework dynamique.
+            isStatic = true
+            xcf.add(this)
+        }
     }
 
     sourceSets {

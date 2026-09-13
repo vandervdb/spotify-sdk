@@ -154,6 +154,7 @@ jobs:
             :spotify-android-koin:testDebugUnitTest \
             :spotify-android:assembleRelease \
             :spotify-android-hilt:assembleRelease \
+            :spotify-rn-android:compileDebugKotlin \
             apiCheck --stacktrace
 
       - if: failure()
@@ -162,3 +163,36 @@ jobs:
           name: rapports-android
           path: '**/build/reports/tests/**'
           retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  # Le paquet React Native : ce qui se vérifie sans le SDK Spotify ni appareil.
+  # L'adaptateur Kotlin, lui, dépend de :spotify-android et rejoint le job ci-dessus.
+  # ---------------------------------------------------------------------------
+  react-native:
+    name: React Native · spec et types
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: spotify-rn
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: spotify-rn/package-lock.json
+
+      - run: npm ci
+
+      - name: Vérification des types
+        run: npm run typecheck
+
+      # Le spec est la source du codegen des deux plateformes : s'il devient invalide,
+      # rien ne le signale avant l'intégration dans une application hôte.
+      - name: Le spec doit rester exploitable par le codegen
+        run: |
+          npm run codegen
+          test -f build/generated/java/org/vander/spotify/rn/NativeSpotifySpec.java \
+            || { echo "::error::le codegen n'a produit aucun spec Android"; exit 1; }
+          echo "::notice::spec Android généré"

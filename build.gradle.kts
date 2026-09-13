@@ -20,6 +20,8 @@ plugins {
 // `./gradlew apiDump` régénère les fichiers, `./gradlew apiCheck` échoue s'ils divergent.
 apiValidation {
     ignoredProjects.add("spotify-sdk")
+    // Livré par npm, pas par Maven : pas de surface publique Kotlin à figer.
+    ignoredProjects.add("spotify-rn-android")
 }
 
 allprojects {
@@ -34,7 +36,10 @@ allprojects {
 }
 
 subprojects {
-    // Le projet racine ne produit pas d'artefact.
+    // Le projet racine ne produit pas d'artefact, et le pont React Native se livre
+    // par npm — le publier sur Maven n'aurait aucun consommateur.
+    if (name == "spotify-rn-android") return@subprojects
+
     plugins.apply("com.vanniktech.maven.publish")
 
     // AGP embarque une version de Dokka qui ne sait pas lire les métadonnées Kotlin 2.4 :

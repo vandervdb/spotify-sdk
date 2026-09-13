@@ -8,3 +8,9 @@ local.properties
 # Les AAR du SDK Spotify ne sont pas redistribuables : ils portent les conditions de
 # Spotify et ne sont pas publiés sur Maven Central. Voir spotify-android/README.md.
 spotify-android/libs/*.aar
+
+# Paquet React Native
+spotify-rn/node_modules/
+spotify-rn/build/
+spotify-rn/lib/
+spotify-rn/ios/SpotifyCore.xcframework/
