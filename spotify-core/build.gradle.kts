@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+description = "Cœur multiplateforme : domaine, client Web API Spotify et flot d'autorisation PKCE, sans dépendance Android."
+
 kotlin {
     // Mode strict : tout membre public doit être déclaré explicitement et porter un type
     // de retour explicite. C'est le compilateur qui tient la frontière de l'API, pas la revue.
@@ -32,7 +34,15 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.coroutines.core)
+            // `api` et non `implementation` : `SpotifyClient.session` rend un `StateFlow`,
+            // donc les coroutines font partie de la surface publique. En `implementation`,
+            // un consommateur ne peut pas nommer le type que la lib lui rend — défaut
+            // invisible depuis le dépôt, où la dépendance est déjà sur le classpath, et
+            // attrapé par un projet consommateur qui résout depuis mavenLocal.
+            api(libs.kotlinx.coroutines.core)
+
+            // Ktor et la sérialisation ne traversent aucune signature publique : le moteur
+            // HTTP a été sorti des fabriques, les DTO sont internes.
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)

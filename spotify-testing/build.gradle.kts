@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
 }
 
+description = "Doubles de test multiplateformes pour spotify-core, publiés comme artefact."
+
 kotlin {
     explicitApi()
 

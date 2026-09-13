@@ -1,0 +1,75 @@
+name: Publication
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Publier seulement dans le dépôt local, sans rien envoyer"
+        type: boolean
+        default: true
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Publier sur Maven Central
+    # macOS : les cibles iOS ne se compilent que là, et une publication partielle
+    # laisserait des variantes manquantes dans les métadonnées Gradle.
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      # Les modules Android exigent les AAR du SDK Spotify, absents du dépôt. Sans eux,
+      # seuls le cœur et les doubles multiplateformes seraient publiés — une publication
+      # incomplète est pire qu'aucune, donc on s'arrête.
+      - name: Restaurer les AAR du SDK Spotify
+        env:
+          AARS_B64: ${{ secrets.SPOTIFY_SDK_AARS }}
+        run: |
+          if [ -z "$AARS_B64" ]; then
+            echo "::error::secret SPOTIFY_SDK_AARS absent — publication incomplète refusée"
+            exit 1
+          fi
+          mkdir -p spotify-android/libs
+          echo "$AARS_B64" | base64 -d | tar -xz -C spotify-android/libs
+
+      - name: Vérifier avant de publier
+        run: |
+          ./gradlew \
+            :spotify-core:jvmTest :spotify-testing:jvmTest \
+            :spotify-android:testDebugUnitTest \
+            :spotify-android-testing:testDebugUnitTest \
+            :spotify-android-koin:testDebugUnitTest \
+            apiCheck --stacktrace
+
+      - name: Répétition — publication locale uniquement
+        if: github.event_name == 'workflow_dispatch' && inputs.dry_run
+        run: ./gradlew publishToMavenLocal --stacktrace
+
+      - name: Publier
+        if: github.event_name == 'push' || !inputs.dry_run
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: |
+          if [ -z "${ORG_GRADLE_PROJECT_signingInMemoryKey}" ]; then
+            echo "::error::secret SIGNING_KEY absent — Maven Central refuse les artefacts non signés"
+            exit 1
+          fi
+          ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache --stacktrace

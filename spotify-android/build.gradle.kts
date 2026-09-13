@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
+description = "Couche Android : contrôle de lecture via l'App Remote, autorisation par le SDK Spotify, jeton en DataStore."
+
 // Même exigence que sur le cœur : la surface publique est déclarée, pas subie.
 kotlin {
     explicitApi()

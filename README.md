@@ -197,12 +197,66 @@ Spotify.
 | 2 | `spotify-android` — App Remote, SDK auth, DataStore | **fait, 21 tests verts** |
 | 3 | `spotify-testing`, `spotify-android-testing`, `spotify-android-hilt`, `spotify-android-koin` | **fait, 20 tests verts** |
 | 4 | `@vander/spotify-rn` — spec TS, adaptateurs Kotlin et Swift | à faire |
-| 5 | publication Maven, CI | à faire |
+| 5 | publication Maven, CI | **fait** — chaîne configurée, vérifiée en local, non publiée |
 
 Les AAR du SDK Spotify ne sont **pas** versionnés ici : ils portent les conditions de
 Spotify et ne sont publiés sur aucun dépôt Maven. `spotify-android` les déclare en
 `compileOnly`, `libs/` est ignoré par git, et l'étape d'installation est documentée dans
 [`spotify-android/README.md`](spotify-android/README.md).
+
+---
+
+## Publication
+
+Rien n'est publié à ce jour. La chaîne est configurée et vérifiée localement ; il manque un
+compte Maven Central et une clé de signature.
+
+```
+io.github.vandervdb:spotify-core:0.1.0-SNAPSHOT
+io.github.vandervdb:spotify-android:0.1.0-SNAPSHOT
+io.github.vandervdb:spotify-testing:0.1.0-SNAPSHOT
+io.github.vandervdb:spotify-android-testing:0.1.0-SNAPSHOT
+io.github.vandervdb:spotify-android-hilt:0.1.0-SNAPSHOT
+io.github.vandervdb:spotify-android-koin:0.1.0-SNAPSHOT
+```
+
+**Pourquoi `io.github.vandervdb` et non `org.vander`** : Maven Central exige de prouver la
+propriété du namespace, ce qui supposerait de posséder le domaine `vander.org`. Le préfixe
+`io.github.<compte>` se vérifie avec le compte GitHub, gratuitement. Les paquets Kotlin
+restent `org.vander.spotify.*` — Central ne demande pas qu'ils coïncident avec le groupId.
+
+**Essayer sans attendre une publication** :
+
+```bash
+./gradlew publishToMavenLocal
+```
+
+puis `mavenLocal()` dans les dépôts du projet consommateur. C'est exactement ce que fait le
+test de non-régression décrit ci-dessous.
+
+### Ce qu'un projet consommateur a permis de trouver
+
+Un projet jetable qui résout depuis `mavenLocal` et appelle l'API a révélé un défaut que les
+111 exécutions de test du dépôt ne pouvaient pas voir : `SpotifyClient.session` rend un
+`StateFlow`, mais les coroutines étaient déclarées en `implementation`. Le type était dans la
+surface publique sans que la dépendance le soit — invisible depuis le dépôt, où elle est déjà
+sur le classpath ; bloquant pour quiconque consomme l'artefact.
+
+Une bibliothèque ne se vérifie pas entièrement de l'intérieur.
+
+### Publier réellement
+
+Le workflow `release.yml` se déclenche sur un tag `v*`. Il refuse de publier si les AAR
+Spotify manquent — une publication partielle laisserait des variantes absentes des métadonnées
+Gradle — et si la clé de signature manque, Central refusant les artefacts non signés.
+
+Secrets attendus : `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_KEY`,
+`SIGNING_KEY_PASSWORD`, `SPOTIFY_SDK_AARS`.
+
+**Avant la 1.0** : brancher Dokka. Les javadoc publiés sont vides aujourd'hui, et Maven
+Central en exige un non trivial pour une version définitive — ce n'est pas requis pour un
+SNAPSHOT. Le Dokka embarqué dans AGP ne sait pas lire les métadonnées Kotlin 2.4, d'où
+l'absence de javadoc côté Android.
 
 ---
 

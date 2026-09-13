@@ -8,6 +8,8 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
 }
 
+description = "Câblage Hilt facultatif pour spotify-android."
+
 kotlin {
     explicitApi()
     compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) }
