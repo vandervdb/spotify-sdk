@@ -5,7 +5,7 @@ Native. **Web API partout, App Remote sur Android uniquement**, et aucun secret 
 le flot d'autorisation est Authorization Code + PKCE.
 
 > État : tranches 1 à 3 sur 5. Le cœur, la couche Android et les doubles de test sont
-> écrits et testés — **67 tests, 107 exécutions, 0 échec**, sans réseau ni appareil.
+> écrits et testés — **71 tests, 111 exécutions, 0 échec**, sans réseau ni appareil.
 > Voir *Feuille de route* plus bas.
 
 ---
@@ -28,12 +28,15 @@ combat pas la frontière, on la rend visible dans les artefacts.
 |---|---|---|
 | **`spotify-core`** | domaine, Web API, PKCE, contrat `TokenStore` | `jvm` · `iosArm64` · `iosX64` · `iosSimulatorArm64` |
 | **`spotify-android`** | App Remote, SDK auth, DataStore | AAR |
-| **`spotify-android-hilt`** | un `@Module`, facultatif | AAR |
+| **`spotify-android-hilt`** | câblage Hilt, facultatif | AAR |
+| **`spotify-android-koin`** | câblage Koin, facultatif — alternative à ci-dessus | AAR |
 | **`spotify-testing`** | `FakeSpotifyClient` | KMP |
 | **`spotify-android-testing`** | `FakeSpotifyPlayer`, `FakeAndroidSpotifyClient` | AAR |
 | `@vander/spotify-rn` | spec TurboModule + adaptateurs | npm |
 
-Six artefacts et non cinq comme prévu initialement : `SpotifyPlayer` n'existant que côté
+Sept artefacts et non cinq comme prévu initialement. Deux raisons, toutes deux assumées.
+Les câblages Hilt et Koin sont deux alternatives : on n'en prend qu'une, et une lib n'impose
+pas son DI. Et pour les doubles : `SpotifyPlayer` n'existant que côté
 Android, son double ne peut pas vivre dans un module multiplateforme qui cible aussi iOS.
 Le découpage des doubles suit exactement celui de la lib — un consommateur iOS ne tire
 jamais de code Android.
@@ -110,6 +113,7 @@ les DTO n'en font partie.
 ./gradlew :spotify-android:testDebugUnitTest        # 21 tests, sans émulateur
 ./gradlew :spotify-testing:jvmTest                  # 10 tests, sur le double lui-même
 ./gradlew :spotify-android-testing:testDebugUnitTest # 6 tests
+./gradlew :spotify-android-koin:testDebugUnitTest    # 4 tests
 ./gradlew apiCheck                                  # la surface publique n'a pas bougé
 ```
 
@@ -162,7 +166,7 @@ Spotify.
 |---|---|---|
 | 1 | `spotify-core` — domaine, Web API, PKCE, session | **fait, 30 tests verts** |
 | 2 | `spotify-android` — App Remote, SDK auth, DataStore | **fait, 21 tests verts** |
-| 3 | `spotify-testing`, `spotify-android-testing`, `spotify-android-hilt` | **fait, 16 tests verts** |
+| 3 | `spotify-testing`, `spotify-android-testing`, `spotify-android-hilt`, `spotify-android-koin` | **fait, 20 tests verts** |
 | 4 | `@vander/spotify-rn` — spec TS, adaptateurs Kotlin et Swift | à faire |
 | 5 | publication Maven, CI | à faire |
 

@@ -1,0 +1,4 @@
+public final class org/vander/spotify/android/koin/SpotifyModuleKt {
+	public static final fun spotifyModule ()Lorg/koin/core/module/Module;
+}
+
