@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Thème minimal : l'application est en Compose pur, cette déclaration ne sert qu'à
+        satisfaire l'attribut `theme` du manifeste. Les styles Theme.Material3.* viennent de
+        la bibliothèque MDC (XML), dont une application Compose n'a pas besoin.
+    -->
+    <style name="Theme.SpotifySample" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">?android:colorBackground</item>
+    </style>
+</resources>

@@ -21,10 +21,11 @@ Trois choses à savoir avant d'aller plus loin :
 - **L'API n'est pas stable.** Version `0.1.0-SNAPSHOT`. La surface publique est figée dans
   des fichiers `api/*.api` et toute modification apparaît en revue — mais elle *va* changer,
   et sans préavis tant que la 1.0 n'est pas là.
-- **Personne n'a encore vu cette lib parler à Spotify.** Le code compile et ses contrats
-  sont couverts par 71 tests, mais aucun appel réel à l'API Spotify ni aucun comportement de
-  l'App Remote n'a été observé : cela demande un `client_id` enregistré et un appareil avec
-  l'application Spotify connectée. Voir *Ce qui est prouvé, et ce qui ne l'est pas*.
+- **La lib n'a pas encore obtenu de session Spotify.** Le code compile, ses contrats sont
+  couverts par 71 tests, et [`sample-android`](sample-android) a démontré sur un vrai
+  appareil que toute la plomberie d'autorisation fonctionne — jusqu'au refus du service, le
+  paquet de démonstration n'étant pas déclaré sur le dashboard. Aucun appel Web API ni aucun
+  comportement de l'App Remote n'a donc encore été observé.
 
 **Avancement** : tranches 1 à 5, la 4 partiellement. Le cœur, la couche Android, les doubles de test et
 les deux câblages DI sont écrits et testés — **71 tests, 111 exécutions, 0 échec**, sans

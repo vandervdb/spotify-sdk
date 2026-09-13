@@ -9,6 +9,8 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.kotlin.kapt) apply false
     alias(libs.plugins.maven.publish) apply false
@@ -22,6 +24,8 @@ apiValidation {
     ignoredProjects.add("spotify-sdk")
     // Livré par npm, pas par Maven : pas de surface publique Kotlin à figer.
     ignoredProjects.add("spotify-rn-android")
+    // Application de démonstration : pas une bibliothèque.
+    ignoredProjects.add("sample-android")
 }
 
 allprojects {
@@ -38,7 +42,7 @@ allprojects {
 subprojects {
     // Le projet racine ne produit pas d'artefact, et le pont React Native se livre
     // par npm — le publier sur Maven n'aurait aucun consommateur.
-    if (name == "spotify-rn-android") return@subprojects
+    if (name == "spotify-rn-android" || name == "sample-android") return@subprojects
 
     plugins.apply("com.vanniktech.maven.publish")
 
