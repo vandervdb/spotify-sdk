@@ -1,12 +1,33 @@
 # spotify-sdk
 
+![statut](https://img.shields.io/badge/statut-work%20in%20progress-orange)
+![licence](https://img.shields.io/badge/licence-MIT-blue)
+
 Bibliothèque Spotify publiable, pensée pour des applications Android natives et React
 Native. **Web API partout, App Remote sur Android uniquement**, et aucun secret client —
 le flot d'autorisation est Authorization Code + PKCE.
 
-> État : tranches 1 à 3 sur 5. Le cœur, la couche Android et les doubles de test sont
-> écrits et testés — **71 tests, 111 exécutions, 0 échec**, sans réseau ni appareil.
-> Voir *Feuille de route* plus bas.
+---
+
+## ⚠️ Work in progress — ne pas utiliser en production
+
+Ce dépôt est public parce qu'il n'y a pas de raison de le cacher, pas parce qu'il est prêt.
+Trois choses à savoir avant d'aller plus loin :
+
+- **Rien n'est publié.** Aucun artefact sur Maven Central ; les coordonnées `org.vander.spotify:*`
+  qui apparaissent dans ce README décrivent l'intention, pas quelque chose que vous pouvez
+  résoudre aujourd'hui. Il faut construire depuis les sources.
+- **L'API n'est pas stable.** Version `0.1.0-SNAPSHOT`. La surface publique est figée dans
+  des fichiers `api/*.api` et toute modification apparaît en revue — mais elle *va* changer,
+  et sans préavis tant que la 1.0 n'est pas là.
+- **Personne n'a encore vu cette lib parler à Spotify.** Le code compile et ses contrats
+  sont couverts par 71 tests, mais aucun appel réel à l'API Spotify ni aucun comportement de
+  l'App Remote n'a été observé : cela demande un `client_id` enregistré et un appareil avec
+  l'application Spotify connectée. Voir *Ce qui est prouvé, et ce qui ne l'est pas*.
+
+**Avancement** : tranches 1 à 3 sur 5. Le cœur, la couche Android, les doubles de test et
+les deux câblages DI sont écrits et testés — **71 tests, 111 exécutions, 0 échec**, sans
+réseau ni appareil. Restent le pont React Native et la publication. Voir *Feuille de route*.
 
 ---
 
