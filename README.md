@@ -1,5 +1,6 @@
 # spotify-sdk
 
+[![CI](https://github.com/vandervdb/Spotify-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/vandervdb/Spotify-sdk/actions/workflows/ci.yml)
 ![statut](https://img.shields.io/badge/statut-work%20in%20progress-orange)
 ![licence](https://img.shields.io/badge/licence-MIT-blue)
 
@@ -141,6 +142,13 @@ les DTO n'en font partie.
 Les doubles de test sont couverts par leurs propres tests. Un double publié est du code
 livré : un double dont les corps sont vides passe les tests qu'il est censé servir, et
 l'erreur se découvre chez le consommateur.
+
+**Ce que le badge CI couvre — et ce qu'il ne couvre pas.** Les jobs `jvm` et `ios` vérifient
+`spotify-core` et `spotify-testing`, tests et surface publique, sur les deux plateformes. Les
+quatre modules Android ne sont vérifiés que si les AAR du SDK Spotify sont fournis à la CI
+par un secret de dépôt, puisqu'ils ne peuvent pas être versionnés ici. Sans ce secret, le job
+Android s'arrête en nommant ce qui n'est pas vérifié plutôt que de passer au vert.
+Voir [`.github/workflows/README.md`](.github/workflows/README.md).
 
 Les tests n'ont besoin ni de réseau, ni de compte Spotify, ni d'identifiants : le seam de
 test est le moteur Ktor, remplacé par un `MockEngine`. Deux adapters, donc un vrai seam.
