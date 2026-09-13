@@ -1,0 +1,164 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  GRADLE_OPTS: -Dorg.gradle.daemon=false
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Ce qui ne dépend pas du SDK Spotify : le cœur et les doubles de test.
+  # ---------------------------------------------------------------------------
+  jvm:
+    name: JVM · cœur et doubles
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Tests
+        run: ./gradlew :spotify-core:jvmTest :spotify-testing:jvmTest --stacktrace
+
+      # La surface publique est figée dans api/*.api. Sans ce contrôle, une modification
+      # du contrat passerait en revue sans que personne ne la voie.
+      - name: Contrôle de la surface publique
+        run: ./gradlew :spotify-core:apiCheck :spotify-testing:apiCheck --stacktrace
+
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rapports-jvm
+          path: '**/build/reports/tests/**'
+          retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  # Les mêmes suites, sur simulateur iOS : c'est ce qui valide les `actual` Darwin
+  # (CC_SHA256, SecRandomCopyBytes) à l'exécution et non seulement à la compilation.
+  #
+  # Les runners macOS de GitHub sont arm64, donc `iosSimulatorArm64Test` y tourne —
+  # contrairement à une machine dont la JVM est sous Rosetta, où Kotlin/Native le refuse.
+  # ---------------------------------------------------------------------------
+  ios:
+    name: iOS · simulateur
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      # Un `deviceId` absent de ce runner rendrait la tâche de test SKIPPED : le build
+      # serait vert sans avoir rien exécuté. On choisit donc un appareil qui existe.
+      - name: Choisir un simulateur disponible
+        id: sim
+        run: |
+          device=$(xcrun simctl list devices available \
+            | grep -oE '^ +iPhone [^(]+' | sed 's/^ *//;s/ *$//' | head -1)
+          if [ -z "$device" ]; then
+            echo "::error::aucun simulateur iPhone disponible sur ce runner"
+            exit 1
+          fi
+          echo "device=$device" >> "$GITHUB_OUTPUT"
+          echo "::notice::simulateur retenu : $device"
+
+      - name: Tests
+        run: |
+          ./gradlew :spotify-core:iosSimulatorArm64Test :spotify-testing:iosSimulatorArm64Test \
+            -Pspotify.simulator="${{ steps.sim.outputs.device }}" --stacktrace
+
+      # Garde-fou : une tâche de test iOS SKIPPED ne produit aucun rapport, et le build
+      # reste vert. Sans cette vérification, la suite iOS pourrait cesser de s'exécuter
+      # sans que rien ne l'indique — c'est arrivé pendant le développement.
+      - name: Vérifier que les tests ont réellement tourné
+        run: |
+          count=$(find . -path '*/test-results/iosSimulatorArm64Test/*.xml' | wc -l | tr -d ' ')
+          if [ "$count" -eq 0 ]; then
+            echo "::error::aucun résultat de test iOS : la tâche a été ignorée, pas exécutée"
+            exit 1
+          fi
+          echo "::notice::$count fichiers de résultats iOS"
+
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rapports-ios
+          path: '**/build/reports/tests/**'
+          retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  # Les modules Android ne compilent pas sans les AAR du SDK Spotify, qui ne sont ni
+  # redistribuables ni publiés sur un dépôt Maven — ils sont donc absents du dépôt.
+  #
+  # Ce job ne s'exécute que si le secret SPOTIFY_SDK_AARS est présent : une archive tar.gz
+  # des deux AAR, encodée en base64. Voir .github/workflows/README.md.
+  # Sans lui, il s'arrête en annonçant clairement ce qui n'est PAS vérifié, plutôt que de
+  # laisser croire que tout l'est.
+  # ---------------------------------------------------------------------------
+  android:
+    name: Android · nécessite les AAR Spotify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Restaurer les AAR du SDK Spotify
+        id: aars
+        env:
+          AARS_B64: ${{ secrets.SPOTIFY_SDK_AARS }}
+        run: |
+          if [ -z "$AARS_B64" ]; then
+            echo "::warning::secret SPOTIFY_SDK_AARS absent — modules Android NON vérifiés : spotify-android, spotify-android-testing, spotify-android-hilt, spotify-android-koin"
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          mkdir -p spotify-android/libs
+          echo "$AARS_B64" | base64 -d | tar -xz -C spotify-android/libs
+          ls -1 spotify-android/libs
+          echo "present=true" >> "$GITHUB_OUTPUT"
+
+      - if: steps.aars.outputs.present == 'true'
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - if: steps.aars.outputs.present == 'true'
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Tests et AAR de publication
+        if: steps.aars.outputs.present == 'true'
+        run: |
+          ./gradlew \
+            :spotify-android:testDebugUnitTest \
+            :spotify-android-testing:testDebugUnitTest \
+            :spotify-android-koin:testDebugUnitTest \
+            :spotify-android:assembleRelease \
+            :spotify-android-hilt:assembleRelease \
+            apiCheck --stacktrace
+
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rapports-android
+          path: '**/build/reports/tests/**'
+          retention-days: 7
