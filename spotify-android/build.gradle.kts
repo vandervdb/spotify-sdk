@@ -41,12 +41,26 @@ dependencies {
     // cette lib imposerait alors à tous ses consommateurs pour rien.
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.datastore.preferences)
+    // Onglets personnalisés : le flot d'autorisation est le nôtre, pas celui du SDK Spotify.
+    implementation(libs.androidx.browser)
 
-    // Les AAR du SDK Spotify ne sont ni redistribuables ni publiés sur Maven Central.
-    // `compileOnly` : ils ne sont pas empaquetés dans notre AAR — l'application hôte les
-    // fournit. Voir README.md pour l'étape d'installation.
+    // Dépendance d'exécution NON DÉCLARÉE de l'AAR App Remote : son `GsonMapper` construit
+    // un `GsonBuilder` dès `ConnectionParams.Builder.build()`. En `compileOnly`, l'AAR
+    // n'apporte aucune transitive, et l'application plantait sur NoClassDefFoundError au
+    // premier appel à connect(). Découvert sur appareil — aucun test ne pouvait le voir,
+    // le seam RemoteConnector remplaçant justement tout le SDK.
+    //
+    // Déclarée ici plutôt que laissée aux consommateurs : Gson est sur Maven Central et
+    // redistribuable, contrairement à l'AAR.
+    implementation(libs.gson)
+
+    // Un seul AAR Spotify désormais, celui de l'App Remote. Le SDK d'autorisation a été
+    // abandonné : son chemin app-à-app jette les paramètres personnalisés, donc PKCE ne
+    // peut pas y passer. Voir CustomTabAuthorizer.
+    //
+    // `compileOnly` : non redistribuable, non publié sur Maven, et non empaqueté dans notre
+    // AAR — l'application hôte le fournit. Voir README.md.
     compileOnly(files("libs/spotify-app-remote-release-0.8.0.aar"))
-    compileOnly(files("libs/spotify-auth-release-2.1.0.aar"))
 
     testImplementation(kotlin("test"))
     testImplementation(libs.kotlinx.coroutines.test)

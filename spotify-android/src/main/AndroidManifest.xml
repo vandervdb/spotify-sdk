@@ -1,13 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    Rien à déclarer ici : `LoginActivity` vient du manifeste de l'AAR spotify-auth, qui
-    l'expose avec un intent-filter VIEW/BROWSABLE paramétré par les placeholders
-    `redirectSchemeName` et `redirectHostName`.
-
-    Ces placeholders sont donc la responsabilité de l'APPLICATION hôte, et ils doivent
-    correspondre à la `redirectUri` passée dans SpotifyConfig. C'est une contrainte du SDK
-    Spotify, pas un choix de cette lib — voir README.md, section « Installation ».
--->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!--
+        L'application Spotify est interrogée par l'App Remote : sans cette déclaration,
+        la visibilité des paquets (Android 11+) l'empêche de la trouver.
+    -->
+    <queries>
+        <package android:name="com.spotify.music" />
+    </queries>
+
+    <application>
+        <!--
+            Porte tout le cycle de l'autorisation : ouverture de l'onglet, réception de la
+            redirection, détection de l'abandon.
+
+            `singleTask` est indispensable — la redirection doit revenir sur l'instance qui
+            a ouvert l'onglet, sinon `onNewIntent` n'est jamais appelé.
+
+            Le schéma et l'hôte viennent des placeholders de l'APPLICATION, parce qu'un
+            intent-filter est figé à la compilation. Ils doivent correspondre à la
+            `redirectUri` passée dans SpotifyConfig, et être déclarés sur le dashboard
+            Spotify. Voir README.md.
+        -->
+        <activity
+            android:name="org.vander.spotify.android.auth.SpotifyAuthActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="${spotifyRedirectHost}"
+                    android:scheme="${spotifyRedirectScheme}" />
+            </intent-filter>
+        </activity>
+    </application>
 </manifest>

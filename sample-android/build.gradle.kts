@@ -30,8 +30,11 @@ android {
         // Doit correspondre à une redirect URI enregistrée sur le dashboard Spotify pour ce
         // clientId. Le SDK d'autorisation déclare son LoginActivity avec un intent-filter
         // paramétré par ces deux placeholders.
-        manifestPlaceholders["redirectSchemeName"] = "org-vander-androidapp"
-        manifestPlaceholders["redirectHostName"] = "callback"
+        // Doit correspondre à la redirectUri passée dans SpotifyConfig, et être déclarée
+        // sur le dashboard Spotify. Un intent-filter est figé à la compilation, d'où ces
+        // placeholders — c'est la seule chose que l'application doit encore fixer au build.
+        manifestPlaceholders["spotifyRedirectScheme"] = "org-vander-androidapp"
+        manifestPlaceholders["spotifyRedirectHost"] = "callback"
     }
 
     buildFeatures {
@@ -61,8 +64,8 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
 
-    // Les AAR du SDK Spotify sont `compileOnly` dans la lib : c'est l'application qui les
-    // met sur le classpath d'exécution. Une application consommatrice fera de même.
+    // L'AAR de l'App Remote est `compileOnly` dans la lib : c'est l'application qui le met
+    // sur le classpath d'exécution. Une application consommatrice fera de même.
+    // Le SDK d'autorisation n'est plus nécessaire : le flot PKCE est le nôtre.
     implementation(files("../spotify-android/libs/spotify-app-remote-release-0.8.0.aar"))
-    implementation(files("../spotify-android/libs/spotify-auth-release-2.1.0.aar"))
 }

@@ -104,8 +104,8 @@ public abstract interface class org/vander/spotify/android/SpotifyPlayer {
 	public abstract fun skipPrevious-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class org/vander/spotify/android/auth/ActivityAuthorizer : org/vander/spotify/auth/Authorizer {
-	public fun <init> (Lkotlin/jvm/functions/Function0;)V
+public final class org/vander/spotify/android/auth/CustomTabAuthorizer : org/vander/spotify/auth/Authorizer {
+	public fun <init> (Landroid/content/Context;)V
 	public fun authorize-gIAlu-s (Lorg/vander/spotify/auth/AuthorizationRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
@@ -119,5 +119,13 @@ public final class org/vander/spotify/android/auth/DataStoreTokenStore : org/van
 
 public final class org/vander/spotify/android/auth/DataStoreTokenStore$Companion {
 	public final fun create (Landroid/content/Context;)Lorg/vander/spotify/android/auth/DataStoreTokenStore;
+}
+
+public final class org/vander/spotify/android/auth/SpotifyAuthActivity : android/app/Activity {
+	public static final field Companion Lorg/vander/spotify/android/auth/SpotifyAuthActivity$Companion;
+	public fun <init> ()V
+}
+
+public final class org/vander/spotify/android/auth/SpotifyAuthActivity$Companion {
 }
 

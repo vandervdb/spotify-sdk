@@ -54,6 +54,31 @@ class SpotifyWebApiTest {
         }
 
     @Test
+    fun `un champ null la ou l'API annonce une liste ne fait pas echouer la reponse`() =
+        runTest {
+            // Charge réelle, relevée sur un compte Spotify : certaines playlists portent
+            // `"images": null` plutôt qu'un tableau vide. Une valeur par défaut ne couvre pas
+            // un null explicite — seule une vraie réponse pouvait le révéler, les charges de
+            // test étant toujours bien formées.
+            val recording =
+                RecordingEngine {
+                    MockResponse(
+                        """
+                        {"total":2,"items":[
+                          {"id":"p1","name":"Avec pochette","images":[{"url":"https://i/1"}]},
+                          {"id":"p2","name":"Ma playlist n° 48","images":null}
+                        ]}
+                        """.trimIndent(),
+                    )
+                }
+
+            val page = api(recording).playlists().getOrThrow()
+
+            assertEquals(listOf("Avec pochette", "Ma playlist n° 48"), page.items.map { it.name })
+            assertTrue(page.items[1].images.isEmpty(), "un null doit devenir une liste vide")
+        }
+
+    @Test
     fun `une piste sans identifiant est ecartee a la frontiere`() =
         runTest {
             // Cas réel : un titre local, ou un épisode de podcast dans la file d'attente.

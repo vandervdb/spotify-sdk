@@ -10,9 +10,20 @@ import org.vander.spotify.internal.dto.ApiErrorBodyDto
 
 internal val SpotifyJson: Json =
     Json {
+        // Un champ ajouté par Spotify ne doit pas casser un appel.
         ignoreUnknownKeys = true
         isLenient = true
         explicitNulls = false
+
+        // Indispensable, et découvert sur de vraies données : l'API renvoie parfois
+        // `"images": null` là où sa documentation annonce un tableau. Une valeur par défaut
+        // ne couvre pas un null explicite — sans cette option, une seule playlist sans
+        // pochette faisait échouer la page entière.
+        //
+        // La coercition remplace un null par la valeur par défaut de la propriété quand le
+        // type ne l'accepte pas. C'est de la tolérance en lecture, pas du laxisme : un champ
+        // réellement optionnel reste déclaré nullable dans le DTO.
+        coerceInputValues = true
     }
 
 /**

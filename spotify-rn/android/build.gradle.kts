@@ -30,10 +30,29 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
 }
 
-// `./gradlew :spotify-rn-android:codegen` régénère le spec depuis le TypeScript.
-tasks.register<Exec>("codegen") {
-    description = "Régénère le spec TurboModule depuis src/NativeSpotify.ts"
-    group = "build"
-    workingDir = layout.projectDirectory.dir("..").asFile
-    commandLine("sh", "-c", "npm run codegen")
+// Le spec généré est un artefact de build : il disparaît au `clean`, et la compilation
+// échouait alors sur des références introuvables. Elle en dépend donc explicitement.
+val codegen =
+    tasks.register<Exec>("codegen") {
+        description = "Régénère le spec TurboModule depuis src/NativeSpotify.ts"
+        group = "build"
+
+        val packageDir = layout.projectDirectory.dir("..")
+        workingDir = packageDir.asFile
+
+        inputs.file(packageDir.file("src/NativeSpotify.ts"))
+        outputs.dir(packageDir.dir("build/generated"))
+
+        doFirst {
+            require(packageDir.dir("node_modules").asFile.exists()) {
+                "Le codegen React Native a besoin de ses dépendances : lancer `npm install` " +
+                    "dans spotify-rn/ avant de compiler ce module."
+            }
+        }
+
+        commandLine("sh", "-c", "npm run codegen")
+    }
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    dependsOn(codegen)
 }

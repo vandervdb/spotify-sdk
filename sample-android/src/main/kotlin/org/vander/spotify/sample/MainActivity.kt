@@ -8,7 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import org.vander.spotify.SpotifyConfig
 import org.vander.spotify.android.AndroidSpotifyClient
 import org.vander.spotify.android.SpotifyAndroid
-import org.vander.spotify.android.auth.ActivityAuthorizer
+import org.vander.spotify.android.auth.CustomTabAuthorizer
 
 /**
  * Application de démonstration, et surtout **preuve de fonctionnement**.
@@ -36,8 +36,10 @@ class MainActivity : ComponentActivity() {
                         clientId = BuildConfig.SPOTIFY_CLIENT_ID,
                         redirectUri = REDIRECT_URI,
                     ),
-                // Relue à chaque autorisation, jamais capturée.
-                authorizer = ActivityAuthorizer { this },
+                // Ne demande qu'un Context : l'Activity d'autorisation est fournie par la
+                // bibliothèque et se charge d'ouvrir l'onglet, de recevoir la redirection
+                // et de détecter un abandon.
+                authorizer = CustomTabAuthorizer(applicationContext),
             )
 
         Log.i(TAG, "client créé — clientId présent : ${BuildConfig.SPOTIFY_CLIENT_ID.isNotBlank()}")

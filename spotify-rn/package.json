@@ -11,10 +11,17 @@
     "url": "git+https://github.com/vandervdb/Spotify-sdk.git",
     "directory": "spotify-rn"
   },
-  "files": ["src", "lib", "android", "ios", "*.podspec", "README.md"],
+  "files": [
+    "src",
+    "lib",
+    "android",
+    "ios",
+    "*.podspec",
+    "README.md"
+  ],
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "codegen": "node node_modules/@react-native/codegen/lib/cli/combine/combine-js-to-schema-cli.js build/schema.json src && node node_modules/@react-native/codegen/lib/cli/generators/generate-specs-cli.js --platform android --schemaPath build/schema.json --outputDir build/generated --libraryName SpotifyRn --javaPackageName org.vander.spotify.rn"
+    "codegen": "mkdir -p build && node node_modules/@react-native/codegen/lib/cli/combine/combine-js-to-schema-cli.js build/schema.json src/NativeSpotify.ts --platform android --libraryName SpotifyRn && node node_modules/@react-native/codegen/lib/cli/generators/generate-all.js build/schema.json SpotifyRn build/generated org.vander.spotify.rn"
   },
   "peerDependencies": {
     "react": "*",

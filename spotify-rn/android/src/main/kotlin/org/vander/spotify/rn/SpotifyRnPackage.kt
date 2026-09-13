@@ -1,6 +1,5 @@
 package org.vander.spotify.rn
 
-import androidx.activity.ComponentActivity
 import com.facebook.react.BaseReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
@@ -9,7 +8,7 @@ import com.facebook.react.module.model.ReactModuleInfoProvider
 import org.vander.spotify.SpotifyConfig
 import org.vander.spotify.android.AndroidSpotifyClient
 import org.vander.spotify.android.SpotifyAndroid
-import org.vander.spotify.android.auth.ActivityAuthorizer
+import org.vander.spotify.android.auth.CustomTabAuthorizer
 
 /**
  * Enregistrement du module auprès de React Native.
@@ -67,9 +66,10 @@ class SpotifyRnPackage(
                 .create(
                     context = reactContext.applicationContext,
                     config = config,
-                    // Lue à chaque autorisation, jamais capturée : l'Activity courante
-                    // change, et en garder une figerait une référence morte.
-                    authorizer = ActivityAuthorizer { reactContext.currentActivity as? ComponentActivity },
+                    // Plus besoin de l'Activity courante : le flot d'autorisation est porté
+                    // par une Activity de la bibliothèque. Un souci de moins côté React
+                    // Native, où `currentActivity` peut être nul au mauvais moment.
+                    authorizer = CustomTabAuthorizer(reactContext.applicationContext),
                 ).also { client = it }
         }
 }

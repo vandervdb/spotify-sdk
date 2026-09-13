@@ -21,11 +21,10 @@ Trois choses à savoir avant d'aller plus loin :
 - **L'API n'est pas stable.** Version `0.1.0-SNAPSHOT`. La surface publique est figée dans
   des fichiers `api/*.api` et toute modification apparaît en revue — mais elle *va* changer,
   et sans préavis tant que la 1.0 n'est pas là.
-- **La lib n'a pas encore obtenu de session Spotify.** Le code compile, ses contrats sont
-  couverts par 71 tests, et [`sample-android`](sample-android) a démontré sur un vrai
-  appareil que toute la plomberie d'autorisation fonctionne — jusqu'au refus du service, le
-  paquet de démonstration n'étant pas déclaré sur le dashboard. Aucun appel Web API ni aucun
-  comportement de l'App Remote n'a donc encore été observé.
+- **Ce qui est prouvé contre le vrai Spotify** : depuis le 13/09,
+  [`sample-android`](sample-android) a validé sur appareil l'autorisation PKCE sans secret,
+  les appels Web API authentifiés et le contrôle de lecture par l'App Remote. Le pont React
+  Native, lui, n'a toujours tourné dans aucune application.
 
 **Avancement** : tranches 1 à 5, la 4 partiellement. Le cœur, la couche Android, les doubles de test et
 les deux câblages DI sont écrits et testés — **71 tests, 111 exécutions, 0 échec**, sans
@@ -186,10 +185,16 @@ Prouvé par un test qui tourne :
 - que la déconnexion annule l'abonnement **avant** de fermer la liaison ;
 - qu'une commande de lecture sans liaison ouverte échoue au lieu de ne rien faire.
 
-**Non vérifié**, et qui le restera tant qu'un appareil et des identifiants ne seront pas
-dans la boucle : tout appel réel à l'API Spotify, et tout comportement de l'App Remote.
-Le code compile et ses contrats sont testés ; personne n'a encore vu la lib parler à
-Spotify.
+Et prouvé sur un appareil réel, le 13/09 (voir [`sample-android`](sample-android)) :
+
+- l'autorisation **PKCE sans aucun secret client**, de l'onglet personnalisé jusqu'au jeton ;
+- les appels Web API authentifiés — profil, playlists, file d'attente ;
+- la liaison App Remote, la lecture, la pause, et l'état poussé jusqu'à l'écran ;
+- **la séparation des deux axes** : l'App Remote s'est connecté alors que `session` valait
+  `SignedOut`, ce qui est exactement ce que le découpage promettait.
+
+**Toujours non vérifié** : le pont React Native n'a tourné dans aucune application, et
+l'adaptateur Swift n'est pas compilé.
 
 ---
 
