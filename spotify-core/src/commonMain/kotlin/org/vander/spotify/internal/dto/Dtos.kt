@@ -21,6 +21,7 @@ internal data class ImageDto(
 internal data class ArtistDto(
     val id: String = "",
     val name: String = "",
+    val images: List<ImageDto> = emptyList(),
 )
 
 @Serializable
@@ -28,6 +29,11 @@ internal data class AlbumDto(
     val id: String = "",
     val name: String = "",
     val images: List<ImageDto> = emptyList(),
+    val artists: List<ArtistDto> = emptyList(),
+    @SerialName("release_date") val releaseDate: String? = null,
+    @SerialName("total_tracks") val totalTracks: Int = 0,
+    /** Présent sur `GET /albums/{id}`, absent des albums imbriqués ailleurs. */
+    val tracks: PageDto<TrackDto>? = null,
 )
 
 @Serializable
@@ -71,6 +77,7 @@ internal data class UserDto(
     @SerialName("display_name") val displayName: String? = null,
     val email: String? = null,
     val images: List<ImageDto> = emptyList(),
+    val product: String? = null,
 )
 
 @Serializable
@@ -97,4 +104,78 @@ internal data class ApiErrorDto(
 internal data class AccountsErrorDto(
     val error: String = "",
     @SerialName("error_description") val errorDescription: String? = null,
+)
+
+@Serializable
+internal data class SavedAlbumDto(
+    val album: AlbumDto? = null,
+)
+
+@Serializable
+internal data class SavedAlbumPageDto(
+    val items: List<SavedAlbumDto> = emptyList(),
+    val total: Int = 0,
+)
+
+/** `GET /me/following` enveloppe la page dans un objet `artists`, contrairement à `/me/albums`. */
+@Serializable
+internal data class FollowedArtistsDto(
+    val artists: FollowedArtistPageDto = FollowedArtistPageDto(),
+)
+
+@Serializable
+internal data class FollowedArtistPageDto(
+    val items: List<ArtistDto> = emptyList(),
+    val total: Int = 0,
+)
+
+/** Seul le total nous intéresse : `limit=1` évite de rapatrier des milliers de titres likés. */
+@Serializable
+internal data class SavedTrackPageDto(
+    val total: Int = 0,
+)
+
+/**
+ * Page générique. Les éléments sont nullables : `GET /search` renvoie réellement des `null` dans
+ * `playlists.items`, et un `List<PlaylistDto>` faisait échouer la réponse entière.
+ */
+@Serializable
+internal data class PageDto<T>(
+    val items: List<T?> = emptyList(),
+    val total: Int = 0,
+)
+
+@Serializable
+internal data class SearchResponseDto(
+    val albums: PageDto<AlbumDto> = PageDto(),
+    val artists: PageDto<ArtistDto> = PageDto(),
+    val playlists: PageDto<PlaylistDto> = PageDto(),
+    val tracks: PageDto<TrackDto> = PageDto(),
+)
+
+@Serializable
+internal data class TopTracksDto(
+    val tracks: List<TrackDto?> = emptyList(),
+)
+
+/**
+ * Élément d'une playlist. Le titre est sous `track` ; [item] est lu aussi, par tolérance, car
+ * l'API a commencé à renommer ces champs et une lib publiée ne doit pas casser à cause d'un
+ * renommage côté Spotify. `null` pour un titre supprimé ou indisponible.
+ */
+@Serializable
+internal data class PlaylistItemDto(
+    val track: TrackDto? = null,
+    val item: TrackDto? = null,
+)
+
+/** Même tolérance pour la page : `tracks` historiquement, `items` dans la nouvelle forme. */
+@Serializable
+internal data class PlaylistDetailDto(
+    val id: String? = null,
+    val name: String = "",
+    val description: String? = null,
+    val images: List<ImageDto> = emptyList(),
+    val tracks: PageDto<PlaylistItemDto>? = null,
+    val items: PageDto<PlaylistItemDto>? = null,
 )

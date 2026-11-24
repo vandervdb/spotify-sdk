@@ -2,17 +2,29 @@ public final class org/vander/spotify/android/testing/FakeAndroidSpotifyClient :
 	public fun <init> ()V
 	public fun <init> (Lorg/vander/spotify/testing/FakeSpotifyClient;Lorg/vander/spotify/android/testing/FakeSpotifyPlayer;)V
 	public synthetic fun <init> (Lorg/vander/spotify/testing/FakeSpotifyClient;Lorg/vander/spotify/android/testing/FakeSpotifyPlayer;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun album-gIAlu-s (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun artist-gIAlu-s (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun close ()V
 	public fun currentUser-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun getFakeClient ()Lorg/vander/spotify/testing/FakeSpotifyClient;
 	public final fun getFakePlayer ()Lorg/vander/spotify/android/testing/FakeSpotifyPlayer;
+	public fun getFollowedArtists ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getPlayer ()Lorg/vander/spotify/android/SpotifyPlayer;
 	public fun getPlaylists ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getQueue ()Lkotlinx/coroutines/flow/StateFlow;
+	public fun getSavedAlbums ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getSession ()Lkotlinx/coroutines/flow/StateFlow;
+	public fun isFollowingArtist-gIAlu-s (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun isSaved-qqXD0pA (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun playlist-XEJf7Rs (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun refreshFollowedArtists-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun refreshPlaylists-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun refreshQueue-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun refreshSavedAlbums-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun restoreSession-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun savedTracksTotal-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun search-0E7RQCE (Ljava/lang/String;ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun setFollowingArtist-0E7RQCE (Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun setSaved-MudQkqc (Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signIn-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -33,6 +45,9 @@ public final class org/vander/spotify/android/testing/FakeSpotifyPlayer : org/va
 	public fun getNowPlaying ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun pause-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun play-qqXD0pA (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun playAlbum-gIAlu-s (Lorg/vander/spotify/model/Album;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun playArtist-gIAlu-s (Lorg/vander/spotify/model/Artist;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun playPlaylist-gIAlu-s (Lorg/vander/spotify/model/Playlist;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun resume-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun seekTo-gIAlu-s (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun setNextConnectFailure (Lorg/vander/spotify/SpotifyError;)V
@@ -59,6 +74,39 @@ public final class org/vander/spotify/android/testing/PlayerCommand$Play : org/v
 	public static synthetic fun copy-ycqU7OQ$default (Lorg/vander/spotify/android/testing/PlayerCommand$Play;Ljava/lang/String;ILjava/lang/Object;)Lorg/vander/spotify/android/testing/PlayerCommand$Play;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getTrack-7k_9dm4 ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/android/testing/PlayerCommand$PlayAlbum : org/vander/spotify/android/testing/PlayerCommand {
+	public fun <init> (Lorg/vander/spotify/model/Album;)V
+	public final fun component1 ()Lorg/vander/spotify/model/Album;
+	public final fun copy (Lorg/vander/spotify/model/Album;)Lorg/vander/spotify/android/testing/PlayerCommand$PlayAlbum;
+	public static synthetic fun copy$default (Lorg/vander/spotify/android/testing/PlayerCommand$PlayAlbum;Lorg/vander/spotify/model/Album;ILjava/lang/Object;)Lorg/vander/spotify/android/testing/PlayerCommand$PlayAlbum;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAlbum ()Lorg/vander/spotify/model/Album;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/android/testing/PlayerCommand$PlayArtist : org/vander/spotify/android/testing/PlayerCommand {
+	public fun <init> (Lorg/vander/spotify/model/Artist;)V
+	public final fun component1 ()Lorg/vander/spotify/model/Artist;
+	public final fun copy (Lorg/vander/spotify/model/Artist;)Lorg/vander/spotify/android/testing/PlayerCommand$PlayArtist;
+	public static synthetic fun copy$default (Lorg/vander/spotify/android/testing/PlayerCommand$PlayArtist;Lorg/vander/spotify/model/Artist;ILjava/lang/Object;)Lorg/vander/spotify/android/testing/PlayerCommand$PlayArtist;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArtist ()Lorg/vander/spotify/model/Artist;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/android/testing/PlayerCommand$PlayPlaylist : org/vander/spotify/android/testing/PlayerCommand {
+	public fun <init> (Lorg/vander/spotify/model/Playlist;)V
+	public final fun component1 ()Lorg/vander/spotify/model/Playlist;
+	public final fun copy (Lorg/vander/spotify/model/Playlist;)Lorg/vander/spotify/android/testing/PlayerCommand$PlayPlaylist;
+	public static synthetic fun copy$default (Lorg/vander/spotify/android/testing/PlayerCommand$PlayPlaylist;Lorg/vander/spotify/model/Playlist;ILjava/lang/Object;)Lorg/vander/spotify/android/testing/PlayerCommand$PlayPlaylist;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPlaylist ()Lorg/vander/spotify/model/Playlist;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }

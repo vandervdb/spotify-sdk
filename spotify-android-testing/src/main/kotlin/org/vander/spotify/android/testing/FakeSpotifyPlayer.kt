@@ -8,6 +8,9 @@ import org.vander.spotify.android.NowPlaying
 import org.vander.spotify.android.PlayerConnection
 import org.vander.spotify.android.RepeatMode
 import org.vander.spotify.android.SpotifyPlayer
+import org.vander.spotify.model.Album
+import org.vander.spotify.model.Artist
+import org.vander.spotify.model.Playlist
 import org.vander.spotify.model.TrackId
 
 /**
@@ -63,6 +66,12 @@ public class FakeSpotifyPlayer(
 
     override suspend fun play(track: TrackId): Result<Unit> = record(PlayerCommand.Play(track))
 
+    override suspend fun playAlbum(album: Album): Result<Unit> = record(PlayerCommand.PlayAlbum(album))
+
+    override suspend fun playPlaylist(playlist: Playlist): Result<Unit> = record(PlayerCommand.PlayPlaylist(playlist))
+
+    override suspend fun playArtist(artist: Artist): Result<Unit> = record(PlayerCommand.PlayArtist(artist))
+
     override suspend fun resume(): Result<Unit> = record(PlayerCommand.Resume)
 
     override suspend fun pause(): Result<Unit> = record(PlayerCommand.Pause)
@@ -90,6 +99,18 @@ public class FakeSpotifyPlayer(
 public sealed interface PlayerCommand {
     public data class Play(
         public val track: TrackId,
+    ) : PlayerCommand
+
+    public data class PlayAlbum(
+        public val album: Album,
+    ) : PlayerCommand
+
+    public data class PlayPlaylist(
+        public val playlist: Playlist,
+    ) : PlayerCommand
+
+    public data class PlayArtist(
+        public val artist: Artist,
     ) : PlayerCommand
 
     public data object Resume : PlayerCommand

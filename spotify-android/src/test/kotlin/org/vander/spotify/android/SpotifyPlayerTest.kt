@@ -4,6 +4,10 @@ import app.cash.turbine.test
 import kotlinx.coroutines.test.runTest
 import org.vander.spotify.SpotifyError
 import org.vander.spotify.android.internal.remote.DefaultSpotifyPlayer
+import org.vander.spotify.model.Album
+import org.vander.spotify.model.Artist
+import org.vander.spotify.model.Playlist
+import org.vander.spotify.model.PlaylistId
 import org.vander.spotify.model.TrackId
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -109,6 +113,23 @@ class SpotifyPlayerTest {
 
             assertEquals(
                 listOf("play:spotify:track:t1", "pause", "seekTo:42000", "repeat:Track"),
+                connector.handles.single().commands,
+            )
+        }
+
+    @Test
+    fun `playAlbum et playPlaylist passent l'URI de contexte, pas celle d'un titre`() =
+        runTest {
+            val connector = FakeRemoteConnector()
+            val subject = player(connector)
+            subject.connect().getOrThrow()
+
+            subject.playAlbum(Album(id = "a1", name = "Nuits blanches")).getOrThrow()
+            subject.playPlaylist(Playlist(id = PlaylistId("p1"), name = "Sillons")).getOrThrow()
+            subject.playArtist(Artist(id = "r1", name = "Cléo Wend")).getOrThrow()
+
+            assertEquals(
+                listOf("play:spotify:album:a1", "play:spotify:playlist:p1", "play:spotify:artist:r1"),
                 connector.handles.single().commands,
             )
         }

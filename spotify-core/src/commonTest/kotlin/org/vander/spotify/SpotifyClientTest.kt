@@ -1,5 +1,8 @@
 package org.vander.spotify
 
+import org.vander.spotify.model.TrackId
+import org.vander.spotify.model.PlaylistId
+import org.vander.spotify.model.SearchType
 import app.cash.turbine.test
 import io.ktor.client.request.HttpRequestData
 import kotlinx.coroutines.async
@@ -15,6 +18,7 @@ import org.vander.spotify.internal.web.TokenEndpoint
 import org.vander.spotify.internal.web.spotifyHttpClient
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -176,6 +180,298 @@ class SpotifyClientTest {
             assertEquals(SessionState.SignedOut, subject.session.value)
             assertNull(store.load())
             assertTrue(subject.playlists.value.items.isEmpty())
+        }
+
+    @Test
+    fun `refreshSavedAlbums lit artistes, annee et nombre de titres`() =
+        runTest {
+            store.save(StoredToken("a", "r", expiresAtEpochMs = now + 3_600_000))
+            val recording =
+                RecordingEngine {
+                    MockResponse(
+                        """{"total":243,"items":[{"added_at":"x","album":{"id":"a1","name":"Nuits blanches",
+                        "release_date":"2023-05","total_tracks":11,"artists":[{"id":"r1","name":"Elia Faure"}],
+                        "images":[{"url":"u","width":640,"height":640}]}},{"album":null}]}""",
+                    )
+                }
+            val subject = client(recording, echoState())
+
+            val page = subject.refreshSavedAlbums().getOrThrow()
+
+            val album = page.items.single()
+            assertEquals(243, page.total)
+            assertEquals("Elia Faure", album.artistNames)
+            assertEquals(2023, album.releaseYear)
+            assertEquals(11, album.trackCount)
+            assertEquals(page, subject.savedAlbums.value)
+            assertTrue(recording.requests.any { it.url.encodedPath.endsWith("/me/albums") })
+        }
+
+    @Test
+    fun `restoreSession reprend le jeton stocke sans ouvrir l'autorisation`() =
+        runTest {
+            store.save(StoredToken("a", "r", expiresAtEpochMs = now + 3_600_000))
+            val recording = RecordingEngine { MockResponse("{}") }
+            val subject = client(recording, echoState())
+
+            subject.restoreSession().getOrThrow()
+
+            assertEquals(SessionState.Authorized, subject.session.value)
+            assertTrue(recording.requests.isEmpty(), "aucun appel réseau pour un jeton encore valide")
+        }
+
+    @Test
+    fun `restoreSession sans jeton echoue en NotSignedIn et laisse la session telle quelle`() =
+        runTest {
+            val subject = client(RecordingEngine { MockResponse("{}") }, echoState())
+
+            val error = subject.restoreSession().exceptionOrNull()
+
+            assertIs<SpotifyError.NotSignedIn>(error)
+            assertEquals(SessionState.SignedOut, subject.session.value)
+        }
+
+    @Test
+    fun `refreshFollowedArtists lit l'enveloppe artists de GET me following`() =
+        runTest {
+            store.save(StoredToken("a", "r", expiresAtEpochMs = now + 3_600_000))
+            val recording =
+                RecordingEngine {
+                    MockResponse(
+                        """{"artists":{"total":61,"items":[{"id":"r1","name":"Cléo Wend",
+                        "images":[{"url":"u","width":640,"height":640}]}]}}""",
+                    )
+                }
+            val subject = client(recording, echoState())
+
+            val page = subject.refreshFollowedArtists().getOrThrow()
+
+            assertEquals(61, page.total)
+            assertEquals("Cléo Wend", page.items.single().name)
+            assertEquals("spotify:artist:r1", page.items.single().uri)
+            assertEquals(page, subject.followedArtists.value)
+            val request = recording.requests.single { it.url.encodedPath.endsWith("/me/following") }
+            assertEquals("artist", request.url.parameters["type"])
+        }
+
+    @Test
+    fun `savedTracksTotal ne demande qu'un element et rend le total`() =
+        runTest {
+            store.save(StoredToken("a", "r", expiresAtEpochMs = now + 3_600_000))
+            val recording = RecordingEngine { MockResponse("""{"total":1284,"items":[{"track":{"id":"t"}}]}""") }
+
+            val total = client(recording, echoState()).savedTracksTotal().getOrThrow()
+
+            assertEquals(1284, total)
+            val request = recording.requests.single { it.url.encodedPath.endsWith("/me/tracks") }
+            assertEquals("1", request.url.parameters["limit"])
+        }
+
+    @Test
+    fun `currentUser lit l'offre et isPremium`() =
+        runTest {
+            store.save(StoredToken("a", "r", expiresAtEpochMs = now + 3_600_000))
+            val recording = RecordingEngine { MockResponse("""{"id":"u1","display_name":"Théo","product":"premium"}""") }
+
+            val user = client(recording, echoState()).currentUser().getOrThrow()
+
+            assertEquals("Théo", user.displayName)
+            assertTrue(user.isPremium)
+        }
+
+    @Test
+    fun `search tolere les null de playlists et regroupe par genre`() =
+        runTest {
+            store.save(StoredToken("a", "r", expiresAtEpochMs = now + 3_600_000))
+            val recording =
+                RecordingEngine {
+                    MockResponse(
+                        """{"albums":{"items":[{"id":"a1","name":"Nuits blanches","artists":[{"id":"r1","name":"Elia Faure"}]}]},
+                        "artists":{"items":[{"id":"r1","name":"Elia Faure"}]},
+                        "playlists":{"items":[null,{"id":"p1","name":"Sillons"}]},
+                        "tracks":{"items":[{"id":"t1","name":"Sous la neige","duration_ms":268000}]}}""",
+                    )
+                }
+
+            val results = client(recording, echoState()).search("elia").getOrThrow()
+
+            assertEquals(listOf("a1"), results.albums.map { it.id })
+            assertEquals(listOf("r1"), results.artists.map { it.id })
+            assertEquals(listOf("Sillons"), results.playlists.map { it.name })
+            assertEquals(listOf("t1"), results.tracks.map { it.id.value })
+            val request = recording.requests.single { it.url.encodedPath.endsWith("/search") }
+            assertEquals("elia", request.url.parameters["q"])
+        }
+
+    @Test
+    fun `search envoie tous les genres par defaut, sans offset`() =
+        runTest {
+            store.save(StoredToken("a", "r", expiresAtEpochMs = now + 3_600_000))
+            val recording = RecordingEngine { MockResponse("{}") }
+
+            client(recording, echoState()).search("elia").getOrThrow()
+
+            val request = recording.requests.single { it.url.encodedPath.endsWith("/search") }
+            assertEquals("album,artist,playlist,track", request.url.parameters["type"])
+            assertNull(request.url.parameters["offset"])
+        }
+
+    @Test
+    fun `search limite aux genres demandes et pagine par offset`() =
+        runTest {
+            store.save(StoredToken("a", "r", expiresAtEpochMs = now + 3_600_000))
+            val recording = RecordingEngine { MockResponse("""{"tracks":{"items":[{"id":"t1","name":"Sous la neige"}]}}""") }
+
+            val results =
+                client(recording, echoState())
+                    .search("elia", limit = 10, types = setOf(SearchType.Track), offset = 20)
+                    .getOrThrow()
+
+            val request = recording.requests.single { it.url.encodedPath.endsWith("/search") }
+            assertEquals("track", request.url.parameters["type"])
+            assertEquals("10", request.url.parameters["limit"])
+            assertEquals("20", request.url.parameters["offset"])
+            assertEquals(listOf("t1"), results.tracks.map { it.id.value })
+            assertTrue(results.albums.isEmpty())
+        }
+
+    @Test
+    fun `search sans aucun genre est refuse`() =
+        runTest {
+            val recording = RecordingEngine { MockResponse("{}") }
+
+            assertFailsWith<IllegalArgumentException> {
+                client(recording, echoState()).search("elia", types = emptySet())
+            }
+            assertTrue(recording.requests.isEmpty())
+        }
+
+    @Test
+    fun `search d'une requete vide ne fait aucun appel`() =
+        runTest {
+            val recording = RecordingEngine { MockResponse("{}") }
+
+            val results = client(recording, echoState()).search("   ").getOrThrow()
+
+            assertTrue(results.isEmpty)
+            assertTrue(recording.requests.isEmpty())
+        }
+
+    @Test
+    fun `album rattache l'album a ses titres`() =
+        runTest {
+            store.save(StoredToken("a", "r", expiresAtEpochMs = now + 3_600_000))
+            val recording =
+                RecordingEngine {
+                    MockResponse(
+                        """{"id":"a1","name":"Marée haute","release_date":"2024-03-01","total_tracks":2,
+                        "artists":[{"id":"r1","name":"Nord Nord"}],
+                        "tracks":{"items":[{"id":"t1","name":"Estran","duration_ms":252000,"track_number":1},
+                        {"id":"t2","name":"Ressac","duration_ms":381000,"track_number":2}]}}""",
+                    )
+                }
+
+            val detail = client(recording, echoState()).album("a1").getOrThrow()
+
+            assertEquals(2024, detail.album.releaseYear)
+            assertEquals(listOf(1, 2), detail.tracks.map { it.trackNumber })
+            assertTrue(detail.tracks.all { it.album?.id == "a1" })
+            assertEquals(633_000, detail.durationMs)
+        }
+
+    @Test
+    fun `artist survit a l'echec des titres populaires`() =
+        runTest {
+            store.save(StoredToken("a", "r", expiresAtEpochMs = now + 3_600_000))
+            val recording =
+                RecordingEngine { request ->
+                    val path = request.url.encodedPath
+                    when {
+                        path.endsWith("/top-tracks") -> MockResponse("""{"error":{"status":403,"message":"Forbidden"}}""", status = 403)
+                        path.endsWith("/albums") -> MockResponse("""{"items":[{"id":"a1","name":"Sillons"}]}""")
+                        else -> MockResponse("""{"id":"r1","name":"Elia Faure"}""")
+                    }
+                }
+
+            val detail = client(recording, echoState()).artist("r1").getOrThrow()
+
+            assertEquals("Elia Faure", detail.artist.name)
+            assertTrue(detail.topTracks.isEmpty())
+            assertEquals(listOf("a1"), detail.albums.map { it.id })
+        }
+
+    @Test
+    fun `playlist lit les titres sous track, ignore les elements supprimes`() =
+        runTest {
+            store.save(StoredToken("a", "r", expiresAtEpochMs = now + 3_600_000))
+            val recording =
+                RecordingEngine {
+                    MockResponse(
+                        """{"id":"p1","name":"Le soir tard","description":"calme",
+                        "tracks":{"total":3,"items":[{"track":{"id":"t1","name":"Braise","duration_ms":1000}},
+                        {"track":null},{"track":{"id":"t2","name":"Onde longue"}}]}}""",
+                    )
+                }
+
+            val detail = client(recording, echoState()).playlist(PlaylistId("p1")).getOrThrow()
+
+            assertEquals(listOf("t1", "t2"), detail.tracks.map { it.id.value })
+            assertEquals(3, detail.totalTracks)
+            assertEquals("calme", detail.description)
+        }
+
+    @Test
+    fun `playlist lit aussi la forme items-item`() =
+        runTest {
+            store.save(StoredToken("a", "r", expiresAtEpochMs = now + 3_600_000))
+            val recording =
+                RecordingEngine {
+                    MockResponse("""{"id":"p1","name":"X","items":{"total":1,"items":[{"item":{"id":"t9","name":"Neuf"}}]}}""")
+                }
+
+            val detail = client(recording, echoState()).playlist(PlaylistId("p1")).getOrThrow()
+
+            assertEquals(listOf("t9"), detail.tracks.map { it.id.value })
+        }
+
+    @Test
+    fun `isFollowingArtist lit la reponse booleenne de following contains`() =
+        runTest {
+            store.save(StoredToken("a", "r", expiresAtEpochMs = now + 3_600_000))
+            val recording = RecordingEngine { MockResponse("[true]") }
+
+            val following = client(recording, echoState()).isFollowingArtist("r1").getOrThrow()
+
+            assertTrue(following)
+            val request = recording.requests.single()
+            assertTrue(request.url.encodedPath.endsWith("/me/following/contains"))
+            assertEquals("artist", request.url.parameters["type"])
+            assertEquals("r1", request.url.parameters["ids"])
+        }
+
+    @Test
+    fun `setFollowingArtist envoie PUT pour suivre et DELETE pour ne plus suivre`() =
+        runTest {
+            store.save(StoredToken("a", "r", expiresAtEpochMs = now + 3_600_000))
+            val recording = RecordingEngine { MockResponse("", status = 204) }
+            val subject = client(recording, echoState())
+
+            subject.setFollowingArtist("r1", true).getOrThrow()
+            subject.setFollowingArtist("r1", false).getOrThrow()
+
+            assertEquals(listOf("PUT", "DELETE"), recording.requests.map { it.method.value })
+            assertTrue(recording.requests.all { it.url.encodedPath.endsWith("/me/following") })
+        }
+
+    @Test
+    fun `isSaved lit un tableau JSON a la racine`() =
+        runTest {
+            store.save(StoredToken("a", "r", expiresAtEpochMs = now + 3_600_000))
+            val recording = RecordingEngine { MockResponse("[false]") }
+
+            val saved = client(recording, echoState()).isSaved(TrackId("t1")).getOrThrow()
+
+            assertEquals(false, saved)
         }
 
     @Test

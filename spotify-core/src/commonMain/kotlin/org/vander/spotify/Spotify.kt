@@ -3,6 +3,7 @@ package org.vander.spotify
 import org.vander.spotify.auth.Authorizer
 import org.vander.spotify.auth.TokenStore
 import org.vander.spotify.internal.DefaultSpotifyClient
+import org.vander.spotify.internal.lyrics.LrclibLyricsRepository
 import org.vander.spotify.internal.web.TokenEndpoint
 import org.vander.spotify.internal.web.defaultHttpEngine
 import org.vander.spotify.internal.web.spotifyHttpClient
@@ -39,4 +40,10 @@ public object Spotify {
             tokenEndpoint = TokenEndpoint(http, config.clientId),
         )
     }
+
+    /**
+     * Paroles via LRCLIB. Indépendant de la session Spotify : aucun jeton, aucun
+     * [SpotifyClient] requis. Garder l'instance : elle porte un cache des titres déjà cherchés.
+     */
+    public fun lyricsRepository(): LyricsRepository = LrclibLyricsRepository(spotifyHttpClient(defaultHttpEngine()))
 }

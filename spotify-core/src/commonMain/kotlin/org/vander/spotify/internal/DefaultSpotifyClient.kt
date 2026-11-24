@@ -1,5 +1,11 @@
 package org.vander.spotify.internal
 
+import org.vander.spotify.model.PlaylistId
+import org.vander.spotify.model.PlaylistDetail
+import org.vander.spotify.model.SearchResults
+import org.vander.spotify.model.SearchType
+import org.vander.spotify.model.ArtistDetail
+import org.vander.spotify.model.AlbumDetail
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,6 +28,8 @@ import org.vander.spotify.internal.web.SpotifyWebApi
 import org.vander.spotify.internal.web.TokenEndpoint
 import org.vander.spotify.internal.web.buildAuthorizeUrl
 import org.vander.spotify.internal.web.flatMap
+import org.vander.spotify.model.AlbumCollection
+import org.vander.spotify.model.ArtistCollection
 import org.vander.spotify.model.PlaylistCollection
 import org.vander.spotify.model.Queue
 import org.vander.spotify.model.TrackId
@@ -42,6 +50,12 @@ internal class DefaultSpotifyClient(
 
     private val _playlists = MutableStateFlow(PlaylistCollection.EMPTY)
     override val playlists: StateFlow<PlaylistCollection> = _playlists.asStateFlow()
+
+    private val _savedAlbums = MutableStateFlow(AlbumCollection.EMPTY)
+    override val savedAlbums: StateFlow<AlbumCollection> = _savedAlbums.asStateFlow()
+
+    private val _followedArtists = MutableStateFlow(ArtistCollection.EMPTY)
+    override val followedArtists: StateFlow<ArtistCollection> = _followedArtists.asStateFlow()
 
     private val _queue = MutableStateFlow(Queue.EMPTY)
     override val queue: StateFlow<Queue> = _queue.asStateFlow()
@@ -100,9 +114,13 @@ internal class DefaultSpotifyClient(
             )
     }
 
+    override suspend fun restoreSession(): Result<Unit> = accessToken().map { }
+
     override suspend fun signOut() {
         tokenStore.clear()
         _playlists.value = PlaylistCollection.EMPTY
+        _savedAlbums.value = AlbumCollection.EMPTY
+        _followedArtists.value = ArtistCollection.EMPTY
         _queue.value = Queue.EMPTY
         _session.value = SessionState.SignedOut
     }
@@ -111,6 +129,37 @@ internal class DefaultSpotifyClient(
 
     override suspend fun refreshPlaylists(): Result<PlaylistCollection> =
         api.playlists().onSuccess { _playlists.value = it }
+
+    override suspend fun refreshSavedAlbums(): Result<AlbumCollection> =
+        api.savedAlbums().onSuccess { _savedAlbums.value = it }
+
+    override suspend fun refreshFollowedArtists(): Result<ArtistCollection> =
+        api.followedArtists().onSuccess { _followedArtists.value = it }
+
+    override suspend fun savedTracksTotal(): Result<Int> = api.savedTracksTotal()
+
+    override suspend fun search(
+        query: String,
+        limit: Int,
+        types: Set<SearchType>,
+        offset: Int,
+    ): Result<SearchResults> {
+        require(types.isNotEmpty()) { "types ne peut pas être vide" }
+        return if (query.isBlank()) Result.success(SearchResults.EMPTY) else api.search(query.trim(), limit, types, offset)
+    }
+
+    override suspend fun album(id: String): Result<AlbumDetail> = api.album(id)
+
+    override suspend fun artist(id: String): Result<ArtistDetail> = api.artist(id)
+
+    override suspend fun playlist(id: PlaylistId): Result<PlaylistDetail> = api.playlist(id)
+
+    override suspend fun isFollowingArtist(id: String): Result<Boolean> = api.isFollowingArtist(id)
+
+    override suspend fun setFollowingArtist(
+        id: String,
+        following: Boolean,
+    ): Result<Unit> = api.setFollowingArtist(id, following)
 
     override suspend fun refreshQueue(): Result<Queue> = api.queue().onSuccess { _queue.value = it }
 

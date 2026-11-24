@@ -7,6 +7,9 @@ public data class Playlist(
     public val images: List<Image> = emptyList(),
 ) {
     public val cover: Image? get() = images.firstOrNull()
+
+    /** URI de contexte attendue par l'App Remote pour lire la playlist en entier. */
+    public val uri: String get() = "spotify:playlist:${id.value}"
 }
 
 /**
@@ -19,5 +22,25 @@ public data class PlaylistCollection(
 ) {
     public companion object {
         public val EMPTY: PlaylistCollection = PlaylistCollection()
+    }
+}
+
+/** Page d'albums enregistrés. Même sens de [total] que pour [PlaylistCollection]. */
+public data class AlbumCollection(
+    public val items: List<Album> = emptyList(),
+    public val total: Int = 0,
+) {
+    public companion object {
+        public val EMPTY: AlbumCollection = AlbumCollection()
+    }
+}
+
+/** Page d'artistes suivis. Même sens de [total] que pour [PlaylistCollection]. */
+public data class ArtistCollection(
+    public val items: List<Artist> = emptyList(),
+    public val total: Int = 0,
+) {
+    public companion object {
+        public val EMPTY: ArtistCollection = ArtistCollection()
     }
 }

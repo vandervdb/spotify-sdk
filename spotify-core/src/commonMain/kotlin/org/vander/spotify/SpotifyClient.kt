@@ -1,7 +1,15 @@
 package org.vander.spotify
 
+import org.vander.spotify.model.PlaylistId
+import org.vander.spotify.model.PlaylistDetail
+import org.vander.spotify.model.SearchResults
+import org.vander.spotify.model.SearchType
+import org.vander.spotify.model.ArtistDetail
+import org.vander.spotify.model.AlbumDetail
 import kotlinx.coroutines.flow.StateFlow
 import org.vander.spotify.auth.SessionState
+import org.vander.spotify.model.AlbumCollection
+import org.vander.spotify.model.ArtistCollection
 import org.vander.spotify.model.PlaylistCollection
 import org.vander.spotify.model.Queue
 import org.vander.spotify.model.TrackId
@@ -25,6 +33,12 @@ public interface SpotifyClient {
     /** Dernières playlists connues. Vide tant que [refreshPlaylists] n'a pas abouti. */
     public val playlists: StateFlow<PlaylistCollection>
 
+    /** Derniers albums enregistrés connus. Vide tant que [refreshSavedAlbums] n'a pas abouti. */
+    public val savedAlbums: StateFlow<AlbumCollection>
+
+    /** Derniers artistes suivis connus. Vide tant que [refreshFollowedArtists] n'a pas abouti. */
+    public val followedArtists: StateFlow<ArtistCollection>
+
     /** Dernière file d'attente connue. Instantané, rafraîchi par [refreshQueue]. */
     public val queue: StateFlow<Queue>
 
@@ -36,12 +50,62 @@ public interface SpotifyClient {
      */
     public suspend fun signIn(): Result<Unit>
 
+    /**
+     * Reprend la session depuis le jeton conservé par le `TokenStore`, en le renouvelant si
+     * besoin. N'ouvre jamais l'écran d'autorisation.
+     *
+     * À appeler au démarrage : [session] vaut [SessionState.SignedOut] tant qu'aucun appel
+     * n'a lu le jeton, même si l'utilisateur s'est connecté à un lancement précédent. Rend
+     * [SpotifyError.NotSignedIn] — sans toucher à [session] — quand il n'y a rien à reprendre.
+     */
+    public suspend fun restoreSession(): Result<Unit>
+
     /** Efface le jeton et ramène [session] à [SessionState.SignedOut]. */
     public suspend fun signOut()
 
     public suspend fun currentUser(): Result<User>
 
     public suspend fun refreshPlaylists(): Result<PlaylistCollection>
+
+    public suspend fun refreshSavedAlbums(): Result<AlbumCollection>
+
+    /** Exige le scope [org.vander.spotify.SpotifyScope.UserFollowRead]. */
+    public suspend fun refreshFollowedArtists(): Result<ArtistCollection>
+
+    /** Nombre de titres likés. Une seule requête d'un élément : on ne rapatrie pas la liste. */
+    public suspend fun savedTracksTotal(): Result<Int>
+
+    /**
+     * Cherche dans les [types] demandés (tous par défaut). Un résultat par appel, rien n'est
+     * mémorisé. Les genres non demandés restent vides dans [SearchResults].
+     *
+     * @param offset rang du premier résultat, pour paginer un genre (`limit` + `offset` à chaque page).
+     * @throws IllegalArgumentException si [types] est vide.
+     */
+    public suspend fun search(
+        query: String,
+        limit: Int = 20,
+        types: Set<SearchType> = SearchType.entries.toSet(),
+        offset: Int = 0,
+    ): Result<SearchResults>
+
+    public suspend fun album(id: String): Result<AlbumDetail>
+
+    public suspend fun artist(id: String): Result<ArtistDetail>
+
+    public suspend fun playlist(id: PlaylistId): Result<PlaylistDetail>
+
+    public suspend fun isFollowingArtist(id: String): Result<Boolean>
+
+    /**
+     * Suit ou ne suit plus l'artiste. Un seul verbe avec un booléen, comme [setSaved]. Exige le
+     * scope [org.vander.spotify.SpotifyScope.UserFollowModify] ; [followedArtists] n'est pas mis à
+     * jour, l'appelant relit avec [refreshFollowedArtists].
+     */
+    public suspend fun setFollowingArtist(
+        id: String,
+        following: Boolean,
+    ): Result<Unit>
 
     public suspend fun refreshQueue(): Result<Queue>
 

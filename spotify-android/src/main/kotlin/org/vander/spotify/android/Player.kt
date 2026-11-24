@@ -2,6 +2,9 @@ package org.vander.spotify.android
 
 import kotlinx.coroutines.flow.StateFlow
 import org.vander.spotify.SpotifyError
+import org.vander.spotify.model.Album
+import org.vander.spotify.model.Artist
+import org.vander.spotify.model.Playlist
 import org.vander.spotify.model.TrackId
 
 /**
@@ -38,6 +41,13 @@ public interface SpotifyPlayer {
     public fun disconnect()
 
     public suspend fun play(track: TrackId): Result<Unit>
+
+    /** Lit l'album depuis son premier titre, la file d'attente étant l'album lui-même. */
+    public suspend fun playAlbum(album: Album): Result<Unit>
+
+    public suspend fun playPlaylist(playlist: Playlist): Result<Unit>
+
+    public suspend fun playArtist(artist: Artist): Result<Unit>
 
     public suspend fun resume(): Result<Unit>
 

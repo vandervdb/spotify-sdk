@@ -1,5 +1,6 @@
 package org.vander.spotify.internal.web
 
+import kotlinx.serialization.json.JsonObject
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
@@ -48,8 +49,10 @@ internal suspend inline fun <reified T> HttpResponse.parseSpotify(): Result<T> {
             }
         }
 
-        val root = SpotifyJson.parseToJsonElement(raw).jsonObject
-        if ("error" in root) return Result.failure(raw.toSpotifyError(status.value))
+        // Certains endpoints (`/contains`) répondent par un tableau JSON, pas un objet : on ne
+        // cherche un champ `error` que si la racine en est un.
+        val root = SpotifyJson.parseToJsonElement(raw) as? JsonObject
+        if (root != null && "error" in root) return Result.failure(raw.toSpotifyError(status.value))
         if (status.value !in 200..299) {
             return Result.failure(SpotifyError.Api(status.value, status.description))
         }

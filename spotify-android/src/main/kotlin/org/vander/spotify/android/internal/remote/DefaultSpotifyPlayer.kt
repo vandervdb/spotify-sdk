@@ -12,6 +12,9 @@ import org.vander.spotify.android.NowPlaying
 import org.vander.spotify.android.PlayerConnection
 import org.vander.spotify.android.RepeatMode
 import org.vander.spotify.android.SpotifyPlayer
+import org.vander.spotify.model.Album
+import org.vander.spotify.model.Artist
+import org.vander.spotify.model.Playlist
 import org.vander.spotify.model.TrackId
 import kotlin.coroutines.resume
 
@@ -87,6 +90,12 @@ internal class DefaultSpotifyPlayer(
     }
 
     override suspend fun play(track: TrackId): Result<Unit> = onHandle { play(track.uri) }
+
+    override suspend fun playAlbum(album: Album): Result<Unit> = onHandle { play(album.uri) }
+
+    override suspend fun playPlaylist(playlist: Playlist): Result<Unit> = onHandle { play(playlist.uri) }
+
+    override suspend fun playArtist(artist: Artist): Result<Unit> = onHandle { play(artist.uri) }
 
     override suspend fun resume(): Result<Unit> = onHandle { resume() }
 

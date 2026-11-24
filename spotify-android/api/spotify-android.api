@@ -96,6 +96,9 @@ public abstract interface class org/vander/spotify/android/SpotifyPlayer {
 	public abstract fun getNowPlaying ()Lkotlinx/coroutines/flow/StateFlow;
 	public abstract fun pause-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun play-qqXD0pA (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun playAlbum-gIAlu-s (Lorg/vander/spotify/model/Album;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun playArtist-gIAlu-s (Lorg/vander/spotify/model/Artist;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun playPlaylist-gIAlu-s (Lorg/vander/spotify/model/Playlist;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun resume-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun seekTo-gIAlu-s (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun setRepeat-gIAlu-s (Lorg/vander/spotify/android/RepeatMode;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
