@@ -18,12 +18,17 @@ internal class FakeRemoteConnector(
     var connectCalls: Int = 0
         private set
 
+    /** Dernier listener reçu : permet de simuler un rappel du SDK après la connexion. */
+    var lastListener: RemoteConnector.Listener? = null
+        private set
+
     override fun connect(
         clientId: String,
         redirectUri: String,
         listener: RemoteConnector.Listener,
     ) {
         connectCalls++
+        lastListener = listener
         if (failWith != null) {
             listener.onFailure(failWith)
             return

@@ -49,11 +49,23 @@ internal class DefaultSpotifyPlayer(
                         redirectUri,
                         object : RemoteConnector.Listener {
                             override fun onConnected(handle: RemoteHandle) {
-                                continuation.resume(Result.success(handle))
+                                if (continuation.isActive) {
+                                    continuation.resume(Result.success(handle))
+                                } else {
+                                    // Connexion annulée entre-temps : la liaison ne servirait à personne.
+                                    handle.disconnect()
+                                }
                             }
 
                             override fun onFailure(error: Throwable) {
-                                continuation.resume(Result.failure(error))
+                                // Le SDK Spotify rappelle ce listener quand la liaison est coupée *après*
+                                // la connexion (ex. l'app Spotify est fermée). Reprendre deux fois la
+                                // coroutine ferait planter l'appli (IllegalStateException).
+                                if (continuation.isActive) {
+                                    continuation.resume(Result.failure(error))
+                                } else {
+                                    onConnectionLost(error)
+                                }
                             }
                         },
                     )
@@ -77,6 +89,19 @@ internal class DefaultSpotifyPlayer(
                 },
             )
         }
+
+    /**
+     * La liaison a été coupée de l'extérieur. On abandonne ce qui en dépendait et on publie l'échec :
+     * `handle` redevient nul, donc un prochain `connect()` rouvre une liaison au lieu de renvoyer
+     * un succès sur une liaison morte.
+     */
+    private fun onConnectionLost(error: Throwable) {
+        subscription?.cancel()
+        subscription = null
+        handle = null
+        _nowPlaying.value = null
+        _connection.value = PlayerConnection.Failed(error.asSpotifyError())
+    }
 
     override fun disconnect() {
         // Annuler l'abonnement d'abord : le SDK peut pousser un dernier état pendant la
