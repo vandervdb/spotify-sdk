@@ -36,7 +36,7 @@ public final class org/vander/spotify/testing/FakeSpotifyClient : org/vander/spo
 	public fun refreshSavedAlbums-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun restoreSession-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun savedTracksTotal-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun search-0E7RQCE (Ljava/lang/String;ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun search-yxL6bBk (Ljava/lang/String;ILjava/util/Set;ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun setFollowingArtist-0E7RQCE (Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun setNextFailure (Lorg/vander/spotify/SpotifyError;)V
 	public final fun setNextSignInResult (Lkotlin/Result;)V
