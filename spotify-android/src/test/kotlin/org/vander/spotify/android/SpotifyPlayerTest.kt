@@ -88,6 +88,25 @@ class SpotifyPlayerTest {
         }
 
     @Test
+    fun `une coupure apres la connexion ne plante pas et permet de se reconnecter`() =
+        runTest {
+            val connector = FakeRemoteConnector()
+            val subject = player(connector)
+            subject.connect().getOrThrow()
+
+            // Le SDK rappelle onFailure une fois connecté : ne doit pas lever « Already resumed ».
+            connector.lastListener!!.onFailure(IllegalStateException("liaison coupée"))
+
+            assertIs<PlayerConnection.Failed>(subject.connection.value)
+            assertNull(subject.nowPlaying.value)
+            assertTrue(connector.handles.single().subscriptionCancelled)
+
+            subject.connect().getOrThrow()
+            assertEquals(2, connector.connectCalls)
+            assertEquals(PlayerConnection.Connected, subject.connection.value)
+        }
+
+    @Test
     fun `un second connect ne rouvre pas de liaison`() =
         runTest {
             val connector = FakeRemoteConnector()
