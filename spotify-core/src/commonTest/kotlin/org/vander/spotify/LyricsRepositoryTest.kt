@@ -18,7 +18,7 @@ class LyricsRepositoryTest {
     private suspend fun LyricsRepository.medea() = lyrics("Medea", "Damon Jee", "Medea EP", 456_000)
 
     @Test
-    fun `la requete porte titre, artiste, album et duree en secondes, sans jeton`() =
+    fun `la requete porte titre - artiste - album et duree en secondes - sans jeton`() =
         runTest {
             val recording = RecordingEngine { MockResponse("""{"plainLyrics":"la la"}""") }
 
@@ -52,7 +52,7 @@ class LyricsRepositoryTest {
         }
 
     @Test
-    fun `sans synchro, il reste le texte brut`() =
+    fun `sans synchro - il reste le texte brut`() =
         runTest {
             val lyrics = repository(RecordingEngine { MockResponse("""{"plainLyrics":"seul"}""") }).medea().getOrThrow()!!
 
@@ -69,7 +69,7 @@ class LyricsRepositoryTest {
         }
 
     @Test
-    fun `un 404 est une absence de paroles, pas une erreur`() =
+    fun `un 404 est une absence de paroles - pas une erreur`() =
         runTest {
             val result = repository(RecordingEngine { MockResponse("""{"code":404,"name":"NotFound"}""", 404) }).medea()
 
@@ -103,7 +103,7 @@ class LyricsRepositoryTest {
         }
 
     @Test
-    fun `un meme titre n'interroge le service qu'une fois, absence comprise`() =
+    fun `un meme titre n'interroge le service qu'une fois - absence comprise`() =
         runTest {
             val recording = RecordingEngine { MockResponse("{}", 404) }
             val repository = repository(recording)
@@ -127,7 +127,7 @@ class LyricsRepositoryTest {
         }
 
     @Test
-    fun `le parseur LRC gere fractions, horodatages multiples et metadonnees`() {
+    fun `le parseur LRC gere fractions - horodatages multiples et metadonnees`() {
         val lines =
             parseLrc(
                 """

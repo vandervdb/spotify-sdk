@@ -183,7 +183,7 @@ class SpotifyClientTest {
         }
 
     @Test
-    fun `refreshSavedAlbums lit artistes, annee et nombre de titres`() =
+    fun `refreshSavedAlbums lit artistes - annee et nombre de titres`() =
         runTest {
             store.save(StoredToken("a", "r", expiresAtEpochMs = now + 3_600_000))
             val recording =
@@ -304,7 +304,7 @@ class SpotifyClientTest {
         }
 
     @Test
-    fun `search envoie tous les genres par defaut, sans offset`() =
+    fun `search envoie tous les genres par defaut - sans offset`() =
         runTest {
             store.save(StoredToken("a", "r", expiresAtEpochMs = now + 3_600_000))
             val recording = RecordingEngine { MockResponse("{}") }
@@ -401,7 +401,7 @@ class SpotifyClientTest {
         }
 
     @Test
-    fun `playlist lit les titres sous track, ignore les elements supprimes`() =
+    fun `playlist lit les titres sous track - ignore les elements supprimes`() =
         runTest {
             store.save(StoredToken("a", "r", expiresAtEpochMs = now + 3_600_000))
             val recording =
