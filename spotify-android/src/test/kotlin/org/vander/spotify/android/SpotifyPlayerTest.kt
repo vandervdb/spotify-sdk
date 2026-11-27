@@ -194,6 +194,19 @@ class SpotifyPlayerTest {
         }
 
     @Test
+    fun `nowPlaying expose les identifiants d'artiste et d'album`() =
+        runTest {
+            val connector = FakeRemoteConnector()
+            val subject = player(connector)
+            subject.connect().getOrThrow()
+
+            connector.handles.single().push(snapshot().copy(artistId = "artist-1", albumId = "album-1"))
+
+            assertEquals("artist-1", subject.nowPlaying.value?.artistId)
+            assertEquals("album-1", subject.nowPlaying.value?.albumId)
+        }
+
+    @Test
     fun `disconnect efface l'etat de lecture`() =
         runTest {
             val connector = FakeRemoteConnector()

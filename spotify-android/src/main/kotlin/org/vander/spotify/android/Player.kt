@@ -85,6 +85,8 @@ public sealed interface PlayerConnection {
  *
  * @param position position de lecture au moment de [emittedAtElapsedMs]. Elle ne s'écoule
  *   pas toute seule : une UI qui veut une barre fluide interpole à partir de ces deux champs.
+ * @param artistId identifiant nu de l'artiste principal, à passer à `SpotifyClient.artist`.
+ * @param albumId identifiant nu de l'album, à passer à `SpotifyClient.album`.
  */
 public data class NowPlaying(
     public val track: TrackId?,
@@ -98,6 +100,9 @@ public data class NowPlaying(
     public val shuffle: Boolean,
     public val repeat: RepeatMode,
     public val emittedAtElapsedMs: Long,
+    // En fin de liste et avec défaut : les appels positionnels existants restent valides.
+    public val artistId: String? = null,
+    public val albumId: String? = null,
 )
 
 /**

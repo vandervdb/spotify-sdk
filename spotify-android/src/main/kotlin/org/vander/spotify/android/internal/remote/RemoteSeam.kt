@@ -81,4 +81,6 @@ internal data class PlayerSnapshot(
     val isPaused: Boolean,
     val shuffle: Boolean,
     val repeatSdkValue: Int,
+    val artistId: String? = null,
+    val albumId: String? = null,
 )

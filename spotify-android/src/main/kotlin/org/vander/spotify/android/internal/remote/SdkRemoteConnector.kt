@@ -123,4 +123,6 @@ private fun PlayerState.toSnapshot(): PlayerSnapshot =
         isPaused = isPaused,
         shuffle = playbackOptions?.isShuffling ?: false,
         repeatSdkValue = playbackOptions?.repeatMode ?: 0,
+        artistId = track?.artist?.uri?.substringAfterLast(':')?.takeIf { it.isNotBlank() },
+        albumId = track?.album?.uri?.substringAfterLast(':')?.takeIf { it.isNotBlank() },
     )
