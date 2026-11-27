@@ -12,7 +12,11 @@ kotlin {
     // de retour explicite. C'est le compilateur qui tient la frontière de l'API, pas la revue.
     explicitApi()
 
-    jvm()
+    jvm {
+        // Sans cible explicite, le bytecode suit le JDK qui lance le build (JDK 25 → classes v69
+        // illisibles par un Gradle en JDK 21). Aligné sur les modules Android du SDK.
+        compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) }
+    }
 
     // Pas de cible Android : ce module ne contient aucun code Android, un consommateur
     // Android prend l'artefact JVM. La couche App Remote vit dans :spotify-android.

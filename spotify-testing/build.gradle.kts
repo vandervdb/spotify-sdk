@@ -7,7 +7,11 @@ description = "Doubles de test multiplateformes pour spotify-core, publiés comm
 kotlin {
     explicitApi()
 
-    jvm()
+    jvm {
+        // Sans cible explicite, le bytecode suit le JDK qui lance le build (JDK 25 → classes v69
+        // illisibles par un Gradle en JDK 21). Aligné sur les modules Android du SDK.
+        compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) }
+    }
     iosArm64()
     iosX64()
     iosSimulatorArm64()
