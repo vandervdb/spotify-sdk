@@ -161,6 +161,8 @@ internal class DefaultSpotifyPlayer(
                 shuffle = snapshot.shuffle,
                 repeat = RepeatMode.fromSdk(snapshot.repeatSdkValue),
                 emittedAtElapsedMs = elapsedRealtime(),
+                artistId = snapshot.artistId,
+                albumId = snapshot.albumId,
             )
     }
 
