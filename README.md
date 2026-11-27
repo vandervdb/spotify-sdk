@@ -255,12 +255,12 @@ Une bibliothèque ne se vérifie pas entièrement de l'intérieur.
 
 ### Publier réellement
 
-Le workflow `release.yml` se déclenche sur un tag `v*`. Il refuse de publier si les AAR
-Spotify manquent — une publication partielle laisserait des variantes absentes des métadonnées
-Gradle — et si la clé de signature manque, Central refusant les artefacts non signés.
+Le workflow `release.yml` se déclenche sur un tag `v*`. Il télécharge l'AAR App Remote de
+Spotify (empreinte vérifiée) et refuse de publier si la clé de signature manque, Central
+refusant les artefacts non signés.
 
 Secrets attendus : `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_KEY`,
-`SIGNING_KEY_PASSWORD`, `SPOTIFY_SDK_AARS`.
+`SIGNING_KEY_PASSWORD`.
 
 **Avant la 1.0** : brancher Dokka. Les javadoc publiés sont vides aujourd'hui, et Maven
 Central en exige un non trivial pour une version définitive — ce n'est pas requis pour un

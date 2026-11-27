@@ -1,0 +1,21 @@
+name: AAR Spotify App Remote
+description: >
+  Télécharge l'AAR App Remote de Spotify dans spotify-android/libs, dont les modules Android
+  ont besoin pour compiler. À appeler après le checkout.
+
+runs:
+  using: composite
+  steps:
+    # L'AAR n'est pas versionné ici, mais il est public (Apache-2.0) dans le dépôt de Spotify.
+    # Un secret ne peut pas le porter : GitHub plafonne un secret à 48 Ko, l'AAR encodé en fait
+    # plus de 170. L'empreinte est vérifiée pour qu'un fichier remplacé en amont ne passe pas.
+    - name: Télécharger l'AAR Spotify App Remote
+      shell: bash
+      env:
+        AAR: spotify-app-remote-release-0.8.0.aar
+        SHA256: b5a6dd880eaf01f63a871cba9ef7af77c341f8a94ffc8fdf2e9021f9a9d4c198
+      run: |
+        mkdir -p spotify-android/libs
+        curl -fsSL "https://raw.githubusercontent.com/spotify/android-sdk/master/app-remote-lib/$AAR" \
+          -o "spotify-android/libs/$AAR"
+        echo "$SHA256  spotify-android/libs/$AAR" | shasum -a 256 -c -

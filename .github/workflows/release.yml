@@ -33,19 +33,8 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v6
 
-      # Les modules Android exigent les AAR du SDK Spotify, absents du dépôt. Sans eux,
-      # seuls le cœur et les doubles multiplateformes seraient publiés — une publication
-      # incomplète est pire qu'aucune, donc on s'arrête.
-      - name: Restaurer les AAR du SDK Spotify
-        env:
-          AARS_B64: ${{ secrets.SPOTIFY_SDK_AARS }}
-        run: |
-          if [ -z "$AARS_B64" ]; then
-            echo "::error::secret SPOTIFY_SDK_AARS absent — publication incomplète refusée"
-            exit 1
-          fi
-          mkdir -p spotify-android/libs
-          echo "$AARS_B64" | base64 -d | tar -xz -C spotify-android/libs
+      # Les modules Android exigent l'AAR App Remote, absent du dépôt.
+      - uses: ./.github/actions/spotify-aar
 
       - name: Vérifier avant de publier
         run: |

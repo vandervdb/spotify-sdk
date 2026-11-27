@@ -1,34 +1,23 @@
 # Intégration continue
 
-Trois jobs, et une limite assumée.
+Trois jobs.
 
 | Job | Runner | Couvre |
 |---|---|---|
 | `jvm` | ubuntu | `spotify-core`, `spotify-testing` — tests et contrôle de surface publique |
 | `ios` | macos (arm64) | les mêmes suites sur simulateur, ce qui valide les `actual` Darwin |
-| `android` | ubuntu | les quatre modules Android — **seulement si le secret est présent** |
+| `android` | ubuntu | les quatre modules Android |
 
-## Pourquoi les modules Android sont conditionnels
+## L'AAR App Remote de Spotify
 
-Ils ne compilent pas sans `spotify-app-remote-release-*.aar` et `spotify-auth-release-*.aar`,
-qui portent les conditions de Spotify, ne sont publiés sur aucun dépôt Maven, et sont donc
-absents de ce dépôt. Vérifié : sans eux, `:spotify-android:compileDebugKotlin` échoue.
+Les modules Android ne compilent pas sans `spotify-app-remote-release-0.8.0.aar`, publié sur
+aucun dépôt Maven et absent de ce dépôt. Il est en revanche public (Apache-2.0) dans
+[spotify/android-sdk](https://github.com/spotify/android-sdk) : l'action
+`.github/actions/spotify-aar` le télécharge et vérifie son empreinte SHA-256, pour qu'un
+fichier remplacé en amont fasse échouer le job au lieu de passer inaperçu.
 
-Sans le secret, le job ne prétend pas réussir : il émet un avertissement nommant les quatre
-modules non vérifiés. Un job vert qui ne compile rien est pire que pas de job du tout.
-
-## Fournir les AAR à la CI
-
-Le secret n'expose rien publiquement : GitHub le chiffre, et les workflows déclenchés par une
-pull request venue d'un fork n'y ont pas accès.
-
-```bash
-cd spotify-android/libs
-tar -cz *.aar | base64 | pbcopy
-```
-
-Puis *Settings → Secrets and variables → Actions → New repository secret*, nommé
-`SPOTIFY_SDK_AARS`.
+Un secret n'est pas une alternative : GitHub plafonne un secret à 48 Ko, l'AAR encodé en
+base64 en fait plus de 170.
 
 ## Deux garde-fous qui méritent d'exister
 
