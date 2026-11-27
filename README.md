@@ -262,10 +262,12 @@ refusant les artefacts non signés.
 Secrets attendus : `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_KEY`,
 `SIGNING_KEY_PASSWORD`.
 
-**Avant la 1.0** : brancher Dokka. Les javadoc publiés sont vides aujourd'hui, et Maven
-Central en exige un non trivial pour une version définitive — ce n'est pas requis pour un
-SNAPSHOT. Le Dokka embarqué dans AGP ne sait pas lire les métadonnées Kotlin 2.4, d'où
-l'absence de javadoc côté Android.
+La version publiée vient du tag : `git tag v0.1.0 && git push origin v0.1.0` publie `0.1.0`.
+Hors tag, le build reste en `0.1.0-SNAPSHOT`.
+
+Les javadoc.jar publiés sont vides : Central exige leur présence, pas leur contenu. Le Dokka
+embarqué dans AGP ne sait pas lire les métadonnées Kotlin 2.4 ; brancher Dokka 2 donnerait une
+vraie documentation.
 
 ---
 

@@ -1,5 +1,7 @@
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import com.vanniktech.maven.publish.SourcesJar
 
 // Tous les plugins sont amenés sur le classpath ici, en `apply false`. Un sous-projet qui
 // redéclarerait une version échouerait : Gradle refuse de vérifier la compatibilité d'un
@@ -36,7 +38,9 @@ allprojects {
     // Les paquets Kotlin restent `org.vander.spotify.*` : Central ne demande pas qu'ils
     // coïncident avec le groupId, et les renommer serait un remaniement sans contrepartie.
     group = "io.github.vandervdb"
-    version = "0.1.0-SNAPSHOT"
+    // `release.yml` passe -PreleaseVersion depuis le tag (v0.1.0 → 0.1.0) ; partout ailleurs,
+    // dont publishToMavenLocal, on reste en SNAPSHOT.
+    version = providers.gradleProperty("releaseVersion").getOrElse("0.1.0-SNAPSHOT")
 }
 
 subprojects {
@@ -46,20 +50,16 @@ subprojects {
 
     plugins.apply("com.vanniktech.maven.publish")
 
-    // AGP embarque une version de Dokka qui ne sait pas lire les métadonnées Kotlin 2.4 :
-    // `javaDocReleaseGeneration` échoue. Les modules KMP, eux, publient déjà un javadoc.jar
-    // vide — vanniktech ne génère de vraie documentation qu'avec Dokka, non branché ici.
-    // On s'aligne donc plutôt que de faire semblant : aucun javadoc.jar côté Android.
-    //
-    // À reprendre avant la 1.0 : Maven Central exige un javadoc.jar pour une version
-    // publiée (pas pour un SNAPSHOT). Brancher Dokka réglera les deux d'un coup.
+    // Maven Central exige un javadoc.jar pour une version définitive. AGP embarque une version
+    // de Dokka qui ne sait pas lire les métadonnées Kotlin 2.4 : on publie donc un javadoc.jar
+    // vide, comme les modules KMP. Brancher Dokka 2 donnerait une vraie documentation.
     plugins.withId("com.android.library") {
         extensions.configure<MavenPublishBaseExtension> {
             configure(
                 AndroidSingleVariantLibrary(
+                    javadocJar = JavadocJar.Empty(),
+                    sourcesJar = SourcesJar.Sources(),
                     variant = "release",
-                    sourcesJar = true,
-                    publishJavadocJar = false,
                 ),
             )
         }

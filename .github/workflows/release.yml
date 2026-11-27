@@ -61,4 +61,14 @@ jobs:
             echo "::error::secret SIGNING_KEY absent — Maven Central refuse les artefacts non signés"
             exit 1
           fi
-          ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache --stacktrace
+          # Sur un tag, la version vient du tag (v0.1.0 → 0.1.0) ; sinon le build reste en SNAPSHOT.
+          VERSION_ARG=""
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+            if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+              echo "::error::tag $GITHUB_REF_NAME invalide — attendu vX.Y.Z"
+              exit 1
+            fi
+            VERSION_ARG="-PreleaseVersion=$VERSION"
+          fi
+          ./gradlew publishAndReleaseToMavenCentral $VERSION_ARG --no-configuration-cache --stacktrace
