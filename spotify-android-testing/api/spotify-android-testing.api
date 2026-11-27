@@ -23,7 +23,7 @@ public final class org/vander/spotify/android/testing/FakeAndroidSpotifyClient :
 	public fun refreshSavedAlbums-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun restoreSession-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun savedTracksTotal-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun search-0E7RQCE (Ljava/lang/String;ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun search-yxL6bBk (Ljava/lang/String;ILjava/util/Set;ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun setFollowingArtist-0E7RQCE (Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun setSaved-MudQkqc (Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun signIn-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

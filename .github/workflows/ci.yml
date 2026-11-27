@@ -118,6 +118,16 @@ jobs:
 
       - uses: ./.github/actions/spotify-aar
 
+      # :spotify-rn-android lance le codegen React Native, qui exige les node_modules.
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: spotify-rn/package-lock.json
+
+      - run: npm ci
+        working-directory: spotify-rn
+
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
