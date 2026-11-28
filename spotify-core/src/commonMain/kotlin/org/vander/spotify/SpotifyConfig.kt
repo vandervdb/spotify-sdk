@@ -39,6 +39,7 @@ public enum class SpotifyScope(public val wireName: String) {
     PlaylistReadPrivate("playlist-read-private"),
     UserFollowRead("user-follow-read"),
     UserFollowModify("user-follow-modify"),
+    UserReadRecentlyPlayed("user-read-recently-played"),
     ;
 
     public companion object {
@@ -54,6 +55,7 @@ public enum class SpotifyScope(public val wireName: String) {
                 PlaylistReadPrivate,
                 UserFollowRead,
                 UserFollowModify,
+                UserReadRecentlyPlayed,
             )
     }
 }

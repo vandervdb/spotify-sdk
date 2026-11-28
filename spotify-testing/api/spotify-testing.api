@@ -19,6 +19,7 @@ public final class org/vander/spotify/testing/FakeSpotifyClient : org/vander/spo
 	public fun getFollowedArtists ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getNextFailure ()Lorg/vander/spotify/SpotifyError;
 	public final fun getNextSignInResult-xLWZpok ()Lkotlin/Result;
+	public final fun getPlayHistory ()Ljava/util/List;
 	public final fun getPlaylistDetails ()Ljava/util/Map;
 	public fun getPlaylists ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getQueue ()Lkotlinx/coroutines/flow/StateFlow;
@@ -30,6 +31,7 @@ public final class org/vander/spotify/testing/FakeSpotifyClient : org/vander/spo
 	public fun isFollowingArtist-gIAlu-s (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun isSaved-qqXD0pA (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun playlist-XEJf7Rs (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun recentlyPlayed-gIAlu-s (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun refreshFollowedArtists-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun refreshPlaylists-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun refreshQueue-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -40,6 +42,7 @@ public final class org/vander/spotify/testing/FakeSpotifyClient : org/vander/spo
 	public fun setFollowingArtist-0E7RQCE (Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun setNextFailure (Lorg/vander/spotify/SpotifyError;)V
 	public final fun setNextSignInResult (Lkotlin/Result;)V
+	public final fun setPlayHistory (Ljava/util/List;)V
 	public fun setSaved-MudQkqc (Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun setSavedTracksCount (I)V
 	public final fun setSearchResults (Lorg/vander/spotify/model/SearchResults;)V
@@ -109,6 +112,17 @@ public final class org/vander/spotify/testing/SpotifyCall$IsSaved : org/vander/s
 	public static synthetic fun copy-ycqU7OQ$default (Lorg/vander/spotify/testing/SpotifyCall$IsSaved;Ljava/lang/String;ILjava/lang/Object;)Lorg/vander/spotify/testing/SpotifyCall$IsSaved;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getTrack-7k_9dm4 ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/testing/SpotifyCall$RecentlyPlayed : org/vander/spotify/testing/SpotifyCall {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lorg/vander/spotify/testing/SpotifyCall$RecentlyPlayed;
+	public static synthetic fun copy$default (Lorg/vander/spotify/testing/SpotifyCall$RecentlyPlayed;IILjava/lang/Object;)Lorg/vander/spotify/testing/SpotifyCall$RecentlyPlayed;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLimit ()I
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }

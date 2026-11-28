@@ -1,5 +1,10 @@
 package org.vander.spotify.internal.dto
 
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
+import org.vander.spotify.model.PlayContext
+import org.vander.spotify.model.PlayContextType
+import org.vander.spotify.model.PlayHistory
 import org.vander.spotify.model.PlaylistDetail
 import org.vander.spotify.model.SearchResults
 import org.vander.spotify.model.AlbumDetail
@@ -119,3 +124,31 @@ internal fun PlaylistDetailDto.toDomainOrNull(): PlaylistDetail? {
         totalTracks = page?.total ?: tracks.size,
     )
 }
+
+/**
+ * L'URI de contexte vaut `spotify:album:<id>`, ou `spotify:user:<u>:playlist:<id>` pour les
+ * anciennes playlists : le type et l'identifiant sont donc les deux derniers segments.
+ */
+internal fun ContextDto.toDomainOrNull(): PlayContext? {
+    val segments = uri.split(':')
+    if (segments.size < 3) return null
+    val id = segments.last().takeIf { it.isNotBlank() } ?: return null
+    val contextType =
+        when (segments[segments.size - 2]) {
+            "album" -> PlayContextType.Album
+            "playlist" -> PlayContextType.Playlist
+            "artist" -> PlayContextType.Artist
+            else -> return null
+        }
+    return PlayContext(contextType, id)
+}
+
+/** Un titre sans identifiant ou une date illisible font sauter l'élément, pas toute la réponse. */
+@OptIn(ExperimentalTime::class)
+internal fun PlayHistoryDto.toDomainOrNull(): PlayHistory? {
+    val domainTrack = track?.toDomainOrNull() ?: return null
+    val playedAtMs = runCatching { Instant.parse(playedAt).toEpochMilliseconds() }.getOrNull() ?: return null
+    return PlayHistory(track = domainTrack, playedAtMs = playedAtMs, context = context?.toDomainOrNull())
+}
+
+internal fun RecentlyPlayedDto.toDomain(): List<PlayHistory> = items.mapNotNull { it?.toDomainOrNull() }

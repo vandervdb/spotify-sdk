@@ -1,6 +1,7 @@
 package org.vander.spotify.testing
 
 import org.vander.spotify.model.PlaylistId
+import org.vander.spotify.model.PlayHistory
 import org.vander.spotify.model.PlaylistDetail
 import org.vander.spotify.model.SearchResults
 import org.vander.spotify.model.SearchType
@@ -71,6 +72,9 @@ public class FakeSpotifyClient(
 
     /** Rendu par [search], quelle que soit la requête non vide. */
     public var searchResults: SearchResults = SearchResults.EMPTY
+
+    /** Historique rendu par [recentlyPlayed], du plus récent au plus ancien, tronqué à `limit`. */
+    public var playHistory: List<PlayHistory> = emptyList()
 
     /** Détails rendus par [album] et [artist], par identifiant. Un identifiant absent échoue en 404. */
     public val albumDetails: MutableMap<String, AlbumDetail> = mutableMapOf()
@@ -225,6 +229,12 @@ public class FakeSpotifyClient(
         return failIfScripted() ?: Result.success(_queue.value)
     }
 
+    override suspend fun recentlyPlayed(limit: Int): Result<List<PlayHistory>> {
+        _calls += SpotifyCall.RecentlyPlayed(limit)
+        require(limit in 1..50) { "limit doit être dans 1..50" }
+        return failIfScripted() ?: Result.success(playHistory.take(limit))
+    }
+
     override suspend fun isSaved(track: TrackId): Result<Boolean> {
         _calls += SpotifyCall.IsSaved(track)
         return failIfScripted() ?: Result.success(track in saved)
@@ -295,6 +305,10 @@ public sealed interface SpotifyCall {
     ) : SpotifyCall
 
     public data object RefreshQueue : SpotifyCall
+
+    public data class RecentlyPlayed(
+        public val limit: Int,
+    ) : SpotifyCall
 
     public data class IsSaved(
         public val track: TrackId,
