@@ -179,3 +179,22 @@ internal data class PlaylistDetailDto(
     val tracks: PageDto<PlaylistItemDto>? = null,
     val items: PageDto<PlaylistItemDto>? = null,
 )
+
+@Serializable
+internal data class ContextDto(
+    val type: String = "",
+    val uri: String = "",
+)
+
+@Serializable
+internal data class PlayHistoryDto(
+    val track: TrackDto? = null,
+    @SerialName("played_at") val playedAt: String = "",
+    val context: ContextDto? = null,
+)
+
+/** `GET /me/player/recently-played` pagine par curseurs ; seuls les éléments nous servent. */
+@Serializable
+internal data class RecentlyPlayedDto(
+    val items: List<PlayHistoryDto?> = emptyList(),
+)

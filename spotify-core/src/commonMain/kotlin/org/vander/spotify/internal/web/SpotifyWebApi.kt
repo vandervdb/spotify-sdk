@@ -26,6 +26,8 @@ import org.vander.spotify.SpotifyError
 import org.vander.spotify.internal.dto.FollowedArtistsDto
 import org.vander.spotify.internal.dto.PlaylistPageDto
 import org.vander.spotify.internal.dto.QueueDto
+import org.vander.spotify.internal.dto.RecentlyPlayedDto
+import org.vander.spotify.model.PlayHistory
 import org.vander.spotify.internal.dto.SavedTrackPageDto
 import org.vander.spotify.internal.dto.SavedAlbumPageDto
 import org.vander.spotify.internal.dto.UserDto
@@ -154,6 +156,19 @@ internal class SpotifyWebApi(
 
     suspend fun queue(): Result<Queue> =
         authorized { get("me/player/queue") }.flatMap { it.parseSpotify<QueueDto>() }.map { it.toDomain() }
+
+    suspend fun recentlyPlayed(
+        limit: Int,
+        beforeMs: Long? = null,
+    ): Result<List<PlayHistory>> =
+        authorized {
+            get("me/player/recently-played") {
+                parameter("limit", limit)
+                beforeMs?.let { parameter("before", it) }
+            }
+        }
+            .flatMap { it.parseSpotify<RecentlyPlayedDto>() }
+            .map { it.toDomain() }
 
     suspend fun isSaved(track: TrackId): Result<Boolean> =
         authorized { get("me/tracks/contains") { parameter("ids", track.value) } }

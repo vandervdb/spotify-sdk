@@ -21,6 +21,8 @@ public abstract interface class org/vander/spotify/SpotifyClient {
 	public abstract fun isFollowingArtist-gIAlu-s (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun isSaved-qqXD0pA (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun playlist-XEJf7Rs (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun recentlyPlayed-0E7RQCE (ILjava/lang/Long;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun recentlyPlayed-0E7RQCE$default (Lorg/vander/spotify/SpotifyClient;ILjava/lang/Long;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun refreshFollowedArtists-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun refreshPlaylists-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun refreshQueue-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -36,6 +38,7 @@ public abstract interface class org/vander/spotify/SpotifyClient {
 }
 
 public final class org/vander/spotify/SpotifyClient$DefaultImpls {
+	public static synthetic fun recentlyPlayed-0E7RQCE$default (Lorg/vander/spotify/SpotifyClient;ILjava/lang/Long;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun search-yxL6bBk$default (Lorg/vander/spotify/SpotifyClient;Ljava/lang/String;ILjava/util/Set;ILkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
@@ -103,6 +106,7 @@ public final class org/vander/spotify/SpotifyScope : java/lang/Enum {
 	public static final field UserReadEmail Lorg/vander/spotify/SpotifyScope;
 	public static final field UserReadPlaybackState Lorg/vander/spotify/SpotifyScope;
 	public static final field UserReadPrivate Lorg/vander/spotify/SpotifyScope;
+	public static final field UserReadRecentlyPlayed Lorg/vander/spotify/SpotifyScope;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public final fun getWireName ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Lorg/vander/spotify/SpotifyScope;
@@ -386,6 +390,45 @@ public final class org/vander/spotify/model/Lyrics {
 	public final fun getPlain ()Ljava/lang/String;
 	public fun hashCode ()I
 	public final fun isSynced ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/model/PlayContext {
+	public fun <init> (Lorg/vander/spotify/model/PlayContextType;Ljava/lang/String;)V
+	public final fun component1 ()Lorg/vander/spotify/model/PlayContextType;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Lorg/vander/spotify/model/PlayContextType;Ljava/lang/String;)Lorg/vander/spotify/model/PlayContext;
+	public static synthetic fun copy$default (Lorg/vander/spotify/model/PlayContext;Lorg/vander/spotify/model/PlayContextType;Ljava/lang/String;ILjava/lang/Object;)Lorg/vander/spotify/model/PlayContext;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getId ()Ljava/lang/String;
+	public final fun getType ()Lorg/vander/spotify/model/PlayContextType;
+	public final fun getUri ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class org/vander/spotify/model/PlayContextType : java/lang/Enum {
+	public static final field Album Lorg/vander/spotify/model/PlayContextType;
+	public static final field Artist Lorg/vander/spotify/model/PlayContextType;
+	public static final field Playlist Lorg/vander/spotify/model/PlayContextType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lorg/vander/spotify/model/PlayContextType;
+	public static fun values ()[Lorg/vander/spotify/model/PlayContextType;
+}
+
+public final class org/vander/spotify/model/PlayHistory {
+	public fun <init> (Lorg/vander/spotify/model/Track;JLorg/vander/spotify/model/PlayContext;)V
+	public synthetic fun <init> (Lorg/vander/spotify/model/Track;JLorg/vander/spotify/model/PlayContext;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lorg/vander/spotify/model/Track;
+	public final fun component2 ()J
+	public final fun component3 ()Lorg/vander/spotify/model/PlayContext;
+	public final fun copy (Lorg/vander/spotify/model/Track;JLorg/vander/spotify/model/PlayContext;)Lorg/vander/spotify/model/PlayHistory;
+	public static synthetic fun copy$default (Lorg/vander/spotify/model/PlayHistory;Lorg/vander/spotify/model/Track;JLorg/vander/spotify/model/PlayContext;ILjava/lang/Object;)Lorg/vander/spotify/model/PlayHistory;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContext ()Lorg/vander/spotify/model/PlayContext;
+	public final fun getPlayedAtMs ()J
+	public final fun getTrack ()Lorg/vander/spotify/model/Track;
+	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 

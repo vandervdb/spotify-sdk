@@ -1,6 +1,7 @@
 package org.vander.spotify.internal
 
 import org.vander.spotify.model.PlaylistId
+import org.vander.spotify.model.PlayHistory
 import org.vander.spotify.model.PlaylistDetail
 import org.vander.spotify.model.SearchResults
 import org.vander.spotify.model.SearchType
@@ -163,6 +164,14 @@ internal class DefaultSpotifyClient(
 
     override suspend fun refreshQueue(): Result<Queue> = api.queue().onSuccess { _queue.value = it }
 
+    override suspend fun recentlyPlayed(
+        limit: Int,
+        beforeMs: Long?,
+    ): Result<List<PlayHistory>> {
+        require(limit in 1..MAX_RECENTLY_PLAYED) { "limit doit être dans 1..$MAX_RECENTLY_PLAYED" }
+        return api.recentlyPlayed(limit, beforeMs)
+    }
+
     override suspend fun isSaved(track: TrackId): Result<Boolean> = api.isSaved(track)
 
     override suspend fun setSaved(
@@ -224,3 +233,5 @@ internal class DefaultSpotifyClient(
         const val EXPIRY_MARGIN_MS = 60_000L
     }
 }
+
+private const val MAX_RECENTLY_PLAYED = 50

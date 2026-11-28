@@ -4,6 +4,8 @@ import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.test.runTest
 import org.vander.spotify.internal.web.SpotifyWebApi
 import org.vander.spotify.internal.web.spotifyHttpClient
+import org.vander.spotify.model.PlayContext
+import org.vander.spotify.model.PlayContextType
 import org.vander.spotify.model.TrackId
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -143,5 +145,51 @@ class SpotifyWebApiTest {
 
             assertIs<SpotifyError.NotSignedIn>(error)
             assertTrue(recording.requests.isEmpty(), "aucune requête ne doit partir sans jeton")
+        }
+
+    @Test
+    fun `l'historique convertit date et contexte et ecarte l'illisible`() =
+        runTest {
+            val recording =
+                RecordingEngine {
+                    MockResponse(
+                        """
+                        {"items":[
+                          {"track":{"id":"t1","name":"Un"},"played_at":"2026-11-28T10:15:30.123Z",
+                           "context":{"type":"album","uri":"spotify:album:a1"}},
+                          {"track":{"id":"t2","name":"Deux"},"played_at":"2026-11-28T10:10:00Z",
+                           "context":{"type":"playlist","uri":"spotify:user:bob:playlist:p9"}},
+                          {"track":{"id":"t3","name":"Trois"},"played_at":"2026-11-28T10:05:00Z","context":null},
+                          {"track":{"id":"t4","name":"Podcast"},"played_at":"2026-11-28T10:00:00Z",
+                           "context":{"type":"show","uri":"spotify:show:s1"}},
+                          {"track":{"id":null,"name":"Local"},"played_at":"2026-11-28T09:00:00Z"},
+                          {"track":{"id":"t5","name":"Sans date"},"played_at":"hier"}
+                        ],"cursors":{"after":"1","before":"0"},"limit":50}
+                        """.trimIndent(),
+                    )
+                }
+
+            val history = api(recording).recentlyPlayed(limit = 20).getOrThrow()
+
+            assertEquals(listOf("Un", "Deux", "Trois", "Podcast"), history.map { it.track.name })
+            assertEquals(1_795_860_930_123L, history[0].playedAtMs)
+            assertEquals(PlayContext(PlayContextType.Album, "a1"), history[0].context)
+            assertEquals(PlayContext(PlayContextType.Playlist, "p9"), history[1].context)
+            assertEquals(null, history[2].context)
+            assertEquals(null, history[3].context, "un contexte de podcast n'est pas un album, une playlist ou un artiste")
+            assertEquals("20", recording.requests.single().url.parameters["limit"])
+            assertTrue(recording.requests.single().url.encodedPath.endsWith("me/player/recently-played"))
+            assertEquals(null, recording.requests.single().url.parameters["before"])
+        }
+
+    @Test
+    fun `l'historique pagine vers le passe avec before`() =
+        runTest {
+            val recording = RecordingEngine { MockResponse("""{"items":[]}""") }
+
+            val history = api(recording).recentlyPlayed(limit = 50, beforeMs = 1_795_860_000_000L).getOrThrow()
+
+            assertTrue(history.isEmpty())
+            assertEquals("1795860000000", recording.requests.single().url.parameters["before"])
         }
 }

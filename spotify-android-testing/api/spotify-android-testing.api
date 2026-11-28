@@ -17,6 +17,7 @@ public final class org/vander/spotify/android/testing/FakeAndroidSpotifyClient :
 	public fun isFollowingArtist-gIAlu-s (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun isSaved-qqXD0pA (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun playlist-XEJf7Rs (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun recentlyPlayed-0E7RQCE (ILjava/lang/Long;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun refreshFollowedArtists-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun refreshPlaylists-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun refreshQueue-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

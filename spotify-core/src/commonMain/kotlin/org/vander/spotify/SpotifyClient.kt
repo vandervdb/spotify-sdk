@@ -11,6 +11,7 @@ import org.vander.spotify.auth.SessionState
 import org.vander.spotify.model.AlbumCollection
 import org.vander.spotify.model.ArtistCollection
 import org.vander.spotify.model.PlaylistCollection
+import org.vander.spotify.model.PlayHistory
 import org.vander.spotify.model.Queue
 import org.vander.spotify.model.TrackId
 import org.vander.spotify.model.User
@@ -108,6 +109,26 @@ public interface SpotifyClient {
     ): Result<Unit>
 
     public suspend fun refreshQueue(): Result<Queue>
+
+    /**
+     * Derniers titres écoutés, du plus récent au plus ancien. Un résultat par appel, rien n'est
+     * mémorisé. Exige le scope [org.vander.spotify.SpotifyScope.UserReadRecentlyPlayed].
+     *
+     * Spotify ne compte un titre qu'après environ 30 secondes d'écoute, et les podcasts n'y
+     * figurent pas.
+     *
+     * Pour remonter plus loin, repasser en [beforeMs] le `playedAtMs` de la plus ancienne écoute
+     * reçue. Spotify ne garde qu'un historique court : une page vide signifie qu'il n'y a rien
+     * de plus ancien côté serveur.
+     *
+     * @param beforeMs ne rendre que les écoutes antérieures à cet instant (epoch ms), `null` pour
+     *   les plus récentes.
+     * @throws IllegalArgumentException si [limit] sort de `1..50`, la borne de l'API.
+     */
+    public suspend fun recentlyPlayed(
+        limit: Int = 50,
+        beforeMs: Long? = null,
+    ): Result<List<PlayHistory>>
 
     public suspend fun isSaved(track: TrackId): Result<Boolean>
 
