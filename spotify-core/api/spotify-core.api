@@ -21,8 +21,8 @@ public abstract interface class org/vander/spotify/SpotifyClient {
 	public abstract fun isFollowingArtist-gIAlu-s (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun isSaved-qqXD0pA (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun playlist-XEJf7Rs (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun recentlyPlayed-gIAlu-s (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun recentlyPlayed-gIAlu-s$default (Lorg/vander/spotify/SpotifyClient;ILkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun recentlyPlayed-0E7RQCE (ILjava/lang/Long;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun recentlyPlayed-0E7RQCE$default (Lorg/vander/spotify/SpotifyClient;ILjava/lang/Long;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun refreshFollowedArtists-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun refreshPlaylists-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun refreshQueue-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -38,7 +38,7 @@ public abstract interface class org/vander/spotify/SpotifyClient {
 }
 
 public final class org/vander/spotify/SpotifyClient$DefaultImpls {
-	public static synthetic fun recentlyPlayed-gIAlu-s$default (Lorg/vander/spotify/SpotifyClient;ILkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun recentlyPlayed-0E7RQCE$default (Lorg/vander/spotify/SpotifyClient;ILjava/lang/Long;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun search-yxL6bBk$default (Lorg/vander/spotify/SpotifyClient;Ljava/lang/String;ILjava/util/Set;ILkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 

@@ -117,9 +117,18 @@ public interface SpotifyClient {
      * Spotify ne compte un titre qu'après environ 30 secondes d'écoute, et les podcasts n'y
      * figurent pas.
      *
+     * Pour remonter plus loin, repasser en [beforeMs] le `playedAtMs` de la plus ancienne écoute
+     * reçue. Spotify ne garde qu'un historique court : une page vide signifie qu'il n'y a rien
+     * de plus ancien côté serveur.
+     *
+     * @param beforeMs ne rendre que les écoutes antérieures à cet instant (epoch ms), `null` pour
+     *   les plus récentes.
      * @throws IllegalArgumentException si [limit] sort de `1..50`, la borne de l'API.
      */
-    public suspend fun recentlyPlayed(limit: Int = 50): Result<List<PlayHistory>>
+    public suspend fun recentlyPlayed(
+        limit: Int = 50,
+        beforeMs: Long? = null,
+    ): Result<List<PlayHistory>>
 
     public suspend fun isSaved(track: TrackId): Result<Boolean>
 

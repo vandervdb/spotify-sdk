@@ -73,7 +73,10 @@ public class FakeSpotifyClient(
     /** Rendu par [search], quelle que soit la requête non vide. */
     public var searchResults: SearchResults = SearchResults.EMPTY
 
-    /** Historique rendu par [recentlyPlayed], du plus récent au plus ancien, tronqué à `limit`. */
+    /**
+     * Historique rendu par [recentlyPlayed], du plus récent au plus ancien, tronqué à `limit` et
+     * filtré par `beforeMs`.
+     */
     public var playHistory: List<PlayHistory> = emptyList()
 
     /** Détails rendus par [album] et [artist], par identifiant. Un identifiant absent échoue en 404. */
@@ -229,10 +232,14 @@ public class FakeSpotifyClient(
         return failIfScripted() ?: Result.success(_queue.value)
     }
 
-    override suspend fun recentlyPlayed(limit: Int): Result<List<PlayHistory>> {
-        _calls += SpotifyCall.RecentlyPlayed(limit)
+    override suspend fun recentlyPlayed(
+        limit: Int,
+        beforeMs: Long?,
+    ): Result<List<PlayHistory>> {
+        _calls += SpotifyCall.RecentlyPlayed(limit, beforeMs)
         require(limit in 1..50) { "limit doit être dans 1..50" }
-        return failIfScripted() ?: Result.success(playHistory.take(limit))
+        val older = if (beforeMs == null) playHistory else playHistory.filter { it.playedAtMs < beforeMs }
+        return failIfScripted() ?: Result.success(older.take(limit))
     }
 
     override suspend fun isSaved(track: TrackId): Result<Boolean> {
@@ -308,6 +315,7 @@ public sealed interface SpotifyCall {
 
     public data class RecentlyPlayed(
         public val limit: Int,
+        public val beforeMs: Long? = null,
     ) : SpotifyCall
 
     public data class IsSaved(

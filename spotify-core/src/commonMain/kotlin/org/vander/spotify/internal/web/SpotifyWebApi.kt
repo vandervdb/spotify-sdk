@@ -157,8 +157,16 @@ internal class SpotifyWebApi(
     suspend fun queue(): Result<Queue> =
         authorized { get("me/player/queue") }.flatMap { it.parseSpotify<QueueDto>() }.map { it.toDomain() }
 
-    suspend fun recentlyPlayed(limit: Int): Result<List<PlayHistory>> =
-        authorized { get("me/player/recently-played") { parameter("limit", limit) } }
+    suspend fun recentlyPlayed(
+        limit: Int,
+        beforeMs: Long? = null,
+    ): Result<List<PlayHistory>> =
+        authorized {
+            get("me/player/recently-played") {
+                parameter("limit", limit)
+                beforeMs?.let { parameter("before", it) }
+            }
+        }
             .flatMap { it.parseSpotify<RecentlyPlayedDto>() }
             .map { it.toDomain() }
 

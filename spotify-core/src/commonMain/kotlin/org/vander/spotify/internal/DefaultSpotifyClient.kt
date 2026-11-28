@@ -164,9 +164,12 @@ internal class DefaultSpotifyClient(
 
     override suspend fun refreshQueue(): Result<Queue> = api.queue().onSuccess { _queue.value = it }
 
-    override suspend fun recentlyPlayed(limit: Int): Result<List<PlayHistory>> {
+    override suspend fun recentlyPlayed(
+        limit: Int,
+        beforeMs: Long?,
+    ): Result<List<PlayHistory>> {
         require(limit in 1..MAX_RECENTLY_PLAYED) { "limit doit être dans 1..$MAX_RECENTLY_PLAYED" }
-        return api.recentlyPlayed(limit)
+        return api.recentlyPlayed(limit, beforeMs)
     }
 
     override suspend fun isSaved(track: TrackId): Result<Boolean> = api.isSaved(track)

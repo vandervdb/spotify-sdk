@@ -179,5 +179,17 @@ class SpotifyWebApiTest {
             assertEquals(null, history[3].context, "un contexte de podcast n'est pas un album, une playlist ou un artiste")
             assertEquals("20", recording.requests.single().url.parameters["limit"])
             assertTrue(recording.requests.single().url.encodedPath.endsWith("me/player/recently-played"))
+            assertEquals(null, recording.requests.single().url.parameters["before"])
+        }
+
+    @Test
+    fun `l'historique pagine vers le passe avec before`() =
+        runTest {
+            val recording = RecordingEngine { MockResponse("""{"items":[]}""") }
+
+            val history = api(recording).recentlyPlayed(limit = 50, beforeMs = 1_795_860_000_000L).getOrThrow()
+
+            assertTrue(history.isEmpty())
+            assertEquals("1795860000000", recording.requests.single().url.parameters["before"])
         }
 }
